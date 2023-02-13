@@ -1,6 +1,9 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const app = express()
 const port = 3000
+
+
 
 app.use(express.json());
 
@@ -11,6 +14,7 @@ app.use((req, res, next) => {
   next();
 });
 
+/*route inscription*/
 
 app.post('/api/auth/signup', (req, res, next) => {
  
@@ -18,6 +22,7 @@ app.post('/api/auth/signup', (req, res, next) => {
 
 });
 
+/*route connection*/
 
 app.post('/api/auth/login', (req, res, next) => {
  
