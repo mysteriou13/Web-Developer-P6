@@ -20,8 +20,12 @@ app.use(express.json());
 /*route inscription*/
 
 app.post('/api/auth/signup', (req, res, next) => {
- 
-  tools.singup(req.body.email,req.body.password);
+
+
+  tools.singup(req,res)
+
+
+
 
 });
 

@@ -1,37 +1,36 @@
 module.exports = {
-    singup: function(login,password) {
-        var mongoose = require('mongoose');
- 
-        // make a connection 
-        mongoose.connect('mongodb://localhost:27017/p6_oc');
-         
-        // get reference to database
-        var db = mongoose.connection;
-         
-        db.on('error', console.error.bind(console, 'connection error:'));
-         
-        db.once('open', function() {
-            console.log("Connection Successful!");
-             
-            // define Schema
-            var BookSchema = mongoose.Schema({
-              price: String,
-              quantity: String
+    singup: function(req,res) {
+
+        
+
+        let MongoClient = require('mongodb').MongoClient;
+        let connectionUrl = "mongodb://localhost:27017/";
+        // or
+        // let connectionUrl = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
+        
+        // creating the message object
+        let obj = {"email" : req.body.email};
+        
+        console.log("OBJ: " + obj);
+        
+        MongoClient.connect(connectionUrl, function(err, client) {
+            if (err) throw err;
+            
+            console.log("Connected correctly to server");
+        
+            // if database and collection do not exist they are created
+            
+            var db = client.db('p6_oc')
+            
+            db.collection("User").insertOne(obj, function(err, res) {
+                if (err) throw err;
+                console.log(res);
+                client.close();
             });
-         
-            // compile schema to model
-            var Book = mongoose.model('open_classrom', BookSchema, 'open_classrom');
-         
-            // a document instance
-            var book1 = new Book({ price: login, quantity: password });
-         
-            // save model to database
-            book1.save(function (err, book) {
-              if (err) return console.error(err);
-              console.log(book.name + " saved to bookstore collection.");
-            });
-             
         });
+       
+             
+    
         
  
     },
