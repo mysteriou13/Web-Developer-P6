@@ -1,5 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const saltRounds = 10;
 const app = express()
 const port = 3000
 var tools = require("./insert.js")
@@ -22,9 +24,17 @@ app.use(express.json());
 app.post('/api/auth/signup', (req, res, next) => {
 
 
-  tools.singup(req,res)
+  bcrypt.genSalt(saltRounds, function(err, salt) {
+    bcrypt.hash(req.body.password, salt, function(err, hash) {
+       
+      console.log(hash);
 
+      tools.singup(req,hash);
 
+    });
+});
+
+  res.redirect('http://localhost:4200/login')
 
 
 });

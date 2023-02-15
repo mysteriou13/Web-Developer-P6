@@ -1,7 +1,5 @@
 module.exports = {
-    singup: function(req,res) {
-
-        
+    singup: function(req,hash) {
 
         let MongoClient = require('mongodb').MongoClient;
         let connectionUrl = "mongodb://localhost:27017/";
@@ -9,10 +7,11 @@ module.exports = {
         // let connectionUrl = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
         
         // creating the message object
-        let obj = {"email" : req.body.email};
+        let obj = {"email" : req.body.email, "password": hash};
         
         console.log("OBJ: " + obj);
         
+        /*connection a la base  donn*/
         MongoClient.connect(connectionUrl, function(err, client) {
             if (err) throw err;
             
@@ -25,13 +24,10 @@ module.exports = {
             db.collection("User").insertOne(obj, function(err, res) {
                 if (err) throw err;
                 console.log(res);
-                client.close();
+                client.close();s
             });
         });
-       
-             
     
-        
  
     },
  
