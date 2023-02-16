@@ -26,15 +26,13 @@ app.post('/api/auth/signup', (req, res, next) => {
 
   bcrypt.genSalt(saltRounds, function(err, salt) {
     bcrypt.hash(req.body.password, salt, function(err, hash) {
-       
-      console.log(hash);
 
       tools.singup(req,hash);
 
     });
 });
 
-  res.redirect('http://localhost:4200/login')
+
 
 
 });
