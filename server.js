@@ -27,21 +27,21 @@ app.post('/api/auth/signup', (req, res, next) => {
   bcrypt.genSalt(saltRounds, function(err, salt) {
     bcrypt.hash(req.body.password, salt, function(err, hash) {
 
-      tools.singup(req,hash);
+      tools.singup(req,hash,res);
 
     });
 });
+console.log("sinup");
 
-
-
-
+res.end();
 });
 
 /*route connection*/
 
 app.post('/api/auth/login', (req, res, next) => {
- 
- 
+
+
+   tools.login(req.body.email,req.body.password);
 
 });
 
