@@ -49,11 +49,14 @@ module.exports = {
     
     /*login user*/
 
-    login: function(email,pass) {
+    login: function(email,pass,res) {
+
+        
 
         let MongoClient = require('mongodb').MongoClient;
         let connectionUrl = "mongodb://localhost:27017/p6_oc";
         const bcrypt = require('bcrypt');
+     
         const saltRounds = 10;
         // or
         // let connectionUrl = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
@@ -79,7 +82,7 @@ module.exports = {
            if(obj){
             bcrypt.compare(pass,obj.password, function(err, result) {
                 if (result) {
-                 console.log("valid");
+                 return obj._id;
                   }else{
                     console.log("error");
                 }

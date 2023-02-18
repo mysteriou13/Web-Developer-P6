@@ -5,6 +5,9 @@ const saltRounds = 10;
 const app = express()
 const port = 3000
 var tools = require("./insert.js")
+const jwt = require('jsonwebtoken');
+const { application } = require('express');
+
 
 app.use(express.json());
 
@@ -40,11 +43,31 @@ res.end();
 
 app.post('/api/auth/login', (req, res, next) => {
 
+var result = tools.login(req.body.email,req.body.password,res);
 
-   tools.login(req.body.email,req.body.password);
+if(result !== "error"){
+
+  res.status(200).json({
+    userId: result,
+    token: jwt.sign(
+        { userId: result },
+        'RANDOM_TOKEN_SECRET',
+        { expiresIn: '24h' }
+    )
+});
+
+}
+
+res.end();
 
 });
 
+
+app.get('/api/sauces', (req, res, next) => {
+
+  res.end();
+
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
