@@ -7,6 +7,8 @@ const port = 3000
 var tools = require("./insert.js")
 const jwt = require('jsonwebtoken');
 const { application } = require('express');
+const multer  = require('multer')
+const upload = multer().single('avatar')
 
 
 app.use(express.json());
@@ -18,7 +20,22 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post('/api/sauces', function (req, res) {
 
+
+  upload(req, res, function (err) {
+
+    console.log(req.body);
+
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+    } else if (err) {
+      // An unknown error occurred when uploading.
+    }
+
+    // Everything went fine.
+  })
+})
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
