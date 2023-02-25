@@ -6,14 +6,17 @@ const app = express()
 const port = 3000
 var tools = require("./insert.js")
 const jwt = require('jsonwebtoken');
-const { application } = require('express');
+const  application  = require('express');
 
 const add_sauce = require("./add_sauces.js");
 
 const multer  = require('multer');
-const { add_file } = require('./add_sauces.js');
+const  add_file  = require('./add_sauces.js');
 const upload = multer({ dest: 'uploads/' })
 
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const { cp } = require('fs');
 
 app.use(express.json());
 
@@ -24,6 +27,25 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cookieParser());
+ 
+app.use(session({
+    secret: "amar",
+    saveUninitialized: true,
+    resave: true
+}));
+ var ssn;
+app.get('/',function(req,res){
+   ssn =req.session;
+ /*
+ * Here we have assign the 'session' to 'ssn'.
+ * Now we can create any number of session variable we want.    
+ * Here we do like this.
+ */
+ // YOUR CODE HERE TO GET COMPORT AND COMMAND
+ ssn.comport; 
+ ssn.command; 
+});
 
 
 
@@ -68,15 +90,20 @@ app.post('/api/auth/login', (req, res, next) => {
 
   tools.login(req.body.email, req.body.password,res);
 
+  ssn = req.session;
+  ssn.email=req.body.email;
 
 });
 
 
 app.get('/api/sauces', (req, res, next) => {
 
+  console.log(ssn.email);
+
   res.end();
 
 });
+
 
 
 app.listen(port, () => {
