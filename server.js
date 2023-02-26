@@ -16,7 +16,7 @@ const upload = multer({ dest: 'uploads/' })
 
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const { cp } = require('fs');
+const affiche = require("./affiche_sauce.js");
 
 app.use(express.json());
 
@@ -96,20 +96,30 @@ app.post('/api/auth/login', (req, res, next) => {
 });
 
 
-app.get('/api/sauces', (req, res, next) => {
+app.use('/api/sauces', (req, res, next) => {
 
-  console.log(ssn.email);
 
-  res.end();
+  var MongoClient = require('mongodb').MongoClient;
+  var url = "mongodb://localhost:27017/";
+  
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("p6_oc");
+    dbo.collection("sauces").find({}).toArray(function(err, result) {
+      if (err) throw err;
+      console.log(result);
 
+      res.status(200).json(result)
+
+      db.close();
+    });
+  });
+
+
+  })
+app.listen(3000, function() {
+  console.log(`server listen at: http://localhost:3000/`);
 });
-
-
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
 
 
 
