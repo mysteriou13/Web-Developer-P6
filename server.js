@@ -18,7 +18,11 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const affiche = require("./affiche_sauce.js");
 
+const path = require("path");
+
 app.use(express.json());
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -60,7 +64,7 @@ app.post('/api/sauces', upload.any(), function (req, res, next) {
 
     // Everything went fine.
   
-
+    res.end();
 
 })
 
@@ -107,8 +111,6 @@ app.use('/api/sauces', (req, res, next) => {
     var dbo = db.db("p6_oc");
     dbo.collection("sauces").find({}).toArray(function(err, result) {
       if (err) throw err;
-      console.log(result);
-
       res.status(200).json(result)
 
       db.close();

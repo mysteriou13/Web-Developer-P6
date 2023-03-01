@@ -5,25 +5,14 @@ module.exports = {
         const multer  = require('multer');
 
         var storage = multer.diskStorage({
-
-            destination:function(request, file, callback)
-            {
-                callback(null, './upload');
+            destination: function (req, file, cb) {
+              cb(null, 'uploads/')
             },
-            filename : function(request, file, callback)
-            {
-                var temp_file_arr = file.originalname.split(".");
-    
-                var temp_file_name = temp_file_arr[0];
-    
-                var temp_file_extension = temp_file_arr[1];
-    
-                callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension+".png");
+            filename: function (req, file, cb) {
+                cb(null, Date.now() + path.extname(file.originalname)) 
             }
-    
-        });
-
-        return storage;
+          })
+          
 
     },
 
@@ -77,11 +66,20 @@ module.exports = {
            const token = req.headers.authorization.split(' ')[1];
            const decodedToken = jwt.verify(token, 'shhhhh');
            const userId = decodedToken.userId;
-      
+    
+           /*data pour la base*/
         var data = { userId: a2[5], name : a2[0],  manufacturer : a2[1], description : a2[2], mainPepper : a2[3], 
-            "imageUrl" :namefile+"."+extpic, heat : a2[4], like : 0,  dislikes : 0, usersLiked:0, usersDisliked: 0,} 
-      
-      
+            "imageUrl" :  `${req.protocol}://${req.get('host')}/uploads/`+namefile+"."+extpic, heat : a2[4], like : 0,  dislikes : 0, usersLiked:0, usersDisliked: 0,} 
+    
+            /*ajouter extension pour l'image*/
+            var fs = require('fs');
+fs.rename("./uploads/"+namefile, 
+'./uploads/'+namefile+"."+extpic, function(err) {
+    if ( err ) console.log('ERROR: ' + err);
+
+   
+});
+            
 
           
         /*connection a la base  donn*/
