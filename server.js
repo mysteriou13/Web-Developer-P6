@@ -51,7 +51,7 @@ app.get('/',function(req,res){
  ssn.command; 
 });
 
-
+/*ajout des sauces*/
 
 app.post('/api/sauces', upload.any(), function (req, res, next) {
 
@@ -62,9 +62,8 @@ app.post('/api/sauces', upload.any(), function (req, res, next) {
   
       add_sauce.add_sauces(req,res);
 
-    // Everything went fine.
+    
   
-    res.end();
 
 })
 
@@ -73,7 +72,7 @@ app.use(express.json());
 
 /*route inscription*/
 
-app.post('/api/sauces', function (req, res) {
+app.post('/api/auth/signup', function (req, res) {
 
 
   bcrypt.genSalt(saltRounds, function(err, salt) {
@@ -100,7 +99,7 @@ app.post('/api/auth/login', (req, res, next) => {
 });
 
 
-app.use('/api/sauces', (req, res, next) => {
+app.get('/api/sauces', (req, res, next) => {
 
 
   var MongoClient = require('mongodb').MongoClient;
@@ -116,6 +115,7 @@ app.use('/api/sauces', (req, res, next) => {
       db.close();
     });
   });
+
 
 
   })
