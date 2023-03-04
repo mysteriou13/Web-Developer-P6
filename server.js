@@ -101,7 +101,9 @@ app.post('/api/auth/login', (req, res, next) => {
 
 app.get('/api/sauces', (req, res, next) => {
 
+  console.log("api sauces");
 
+   
   var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb://localhost:27017/";
   
@@ -118,7 +120,32 @@ app.get('/api/sauces', (req, res, next) => {
 
 
 
-  })
+})
+
+app.get('/api/sauces/:id', (req, res, next) => {
+
+
+  mongoose.connect('mongodb://localhost:27017/p6_oc',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+  console.log("get sauces")
+
+  var User = require('/opt/lampp/htdocs/Web-Developer-P6/Sauce.js');
+
+
+  User.findOne()
+
+  .then(User => res.status(200).json(User))
+  .catch(error => res.status(404).json({ error }));
+
+
+})
+
+
+
 app.listen(3000, function() {
   console.log(`server listen at: http://localhost:3000/`);
 });
