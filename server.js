@@ -133,10 +133,10 @@ app.get('/api/sauces/:id', (req, res, next) => {
 
   console.log("get sauces")
 
-  var User = require('/opt/lampp/htdocs/Web-Developer-P6/Sauce.js');
+  var User = require('/opt/lampp/htdocs/Web-Developer-P6/Sauce.js')
 
 
-  User.findOne()
+  User.findOne({_id :req.params.id})
 
   .then(User => res.status(200).json(User))
   .catch(error => res.status(404).json({ error }));
