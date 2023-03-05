@@ -178,6 +178,23 @@ app.delete('/api/sauces/:id', (req, res) => {
     });
   });
 
+  function delete_file(file){
+
+    console.log("delete file");
+
+  var User = require('./Sauce.js')
+    console.log("delete file",file);
+
+    const fs = require('fs');
+
+    fs.unlink(`./uploads/${file}`, () => {
+      User.deleteOne({_id: req.params.id})
+          .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
+          .catch(error => res.status(401).json({ error }));
+  });
+    
+  }
+
     
 function delete_user(){
 
@@ -187,16 +204,40 @@ function delete_user(){
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+  console.log("get sauces")
 
   var User = require('./Sauce.js')
 
-  User.deleteOne({_id:req.params.id})
+
+  User.findOne({_id:req.params.id})
+
+  .then(User => {
+   
+        var filename = User.imageUrl;
 
 
+        var file = filename.split("uploads")
+        
+       delete_file(file[1]);
+    
+})
+.catch( error => {
+    res.status(500).json({ error });
+});
+};
+
+
+  //var User = require('./Sauce.js')
+
+  //User.deleteOne({_id:req.params.id})
+
+  /*
   .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
   .catch(error => res.status(400).json({ error }));
 
-}
+  */
+
+
 
 })
 
