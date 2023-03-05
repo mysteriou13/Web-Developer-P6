@@ -58,7 +58,7 @@ module.exports = {
             var a1 = b1[a].split(":");
              
       
-            a2.push(a1[1]);
+            a2.push(a1[1].replaceAll('"',''));
       
            }
            
@@ -68,7 +68,7 @@ module.exports = {
            const userId = decodedToken.userId;
     
            /*data pour la base*/
-        var data = { userId: a2[5], name : a2[0],  manufacturer : a2[1], description : a2[2], mainPepper : a2[3], 
+        var data = {userId: a2[5], id_sauce: namefile, namefile:namefile+"."+extpic , name : a2[0],  manufacturer : a2[1], description : a2[2], mainPepper : a2[3], 
             "imageUrl" :  `${req.protocol}://${req.get('host')}/uploads/`+namefile+"."+extpic, heat : a2[4], like : 0,  dislikes : 0, usersLiked:0, usersDisliked: 0,} 
     
             /*ajouter extension pour l'image*/

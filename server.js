@@ -19,6 +19,7 @@ const cookieParser = require("cookie-parser");
 const affiche = require("./affiche_sauce.js");
 
 const path = require("path");
+const { cp } = require('fs');
 
 app.use(express.json());
 
@@ -39,6 +40,7 @@ app.use(session({
     resave: true
 }));
  var ssn;
+ var ssnemail;
 app.get('/',function(req,res){
    ssn =req.session;
  /*
@@ -84,17 +86,17 @@ app.post('/api/auth/signup', function (req, res) {
 });
 console.log("sinup");
 
-res.end();
+
 });
 
 /*route connection*/
 
 app.post('/api/auth/login', (req, res, next) => {
 
-  tools.login(req.body.email, req.body.password,res);
+  tools.login(req.body.email, req.body.password,res,ssn);
 
   ssn = req.session;
-  ssn.email=req.body.email;
+ ssnemail =req.body.email;
 
 });
 
@@ -114,13 +116,14 @@ app.get('/api/sauces', (req, res, next) => {
       if (err) throw err;
       res.status(200).json(result)
 
-      db.close();
+       db.close();
     });
   });
 
 
 
 })
+
 
 app.get('/api/sauces/:id', (req, res, next) => {
 
@@ -133,10 +136,10 @@ app.get('/api/sauces/:id', (req, res, next) => {
 
   console.log("get sauces")
 
-  var User = require('/opt/lampp/htdocs/Web-Developer-P6/Sauce.js')
+  var User = require('./Sauce.js')
 
 
-  User.findOne({_id :req.params.id})
+  User.findOne({_id:req.params.id})
 
   .then(User => res.status(200).json(User))
   .catch(error => res.status(404).json({ error }));
@@ -145,10 +148,61 @@ app.get('/api/sauces/:id', (req, res, next) => {
 })
 
 
+app.delete('/api/sauces/:id', (req, res) => {
+
+  
+
+  var MongoClient = require('mongodb').MongoClient;
+  var url = "mongodb://localhost:27017/";
+  
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("p6_oc");
+
+    dbo.collection("User").findOne({email:ssnemail}, function(err, result) {
+
+      if(result){
+      
+        console.log("result user");
+
+        delete_user();
+   
+          }else{
+
+            console.log("error user");
+
+          }
+  
+      
+      db.close();
+    });
+  });
+
+    
+function delete_user(){
+
+  mongoose.connect('mongodb://localhost:27017/p6_oc',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+
+  var User = require('./Sauce.js')
+
+  User.deleteOne({_id:req.params.id})
+
+
+  .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+  .catch(error => res.status(400).json({ error }));
+
+}
+
+})
 
 app.listen(3000, function() {
   console.log(`server listen at: http://localhost:3000/`);
 });
 
 
-
+     
