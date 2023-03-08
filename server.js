@@ -6,8 +6,6 @@ const app = express()
 const port = 3000
 var tools = require("./insert.js")
 const jwt = require('jsonwebtoken');
-const  application  = require('express');
-
 const add_sauce = require("./add_sauces.js");
 
 const multer  = require('multer');
@@ -19,7 +17,6 @@ const cookieParser = require("cookie-parser");
 const affiche = require("./affiche_sauce.js");
 
 const path = require("path");
-const { cp } = require('fs');
 
 app.use(express.json());
 
@@ -101,25 +98,12 @@ app.post('/api/auth/login', (req, res, next) => {
 });
 
 
+/*affichage des sauces */
 app.get('/api/sauces', (req, res, next) => {
 
   console.log("api sauces");
 
-   
-  var MongoClient = require('mongodb').MongoClient;
-  var url = "mongodb://localhost:27017/";
-  
-  MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("p6_oc");
-    dbo.collection("sauces").find({}).toArray(function(err, result) {
-      if (err) throw err;
-      res.status(200).json(result)
-
-       db.close();
-    });
-  });
-
+  affiche.affiche_sauce(res);
 
 
 })
@@ -225,18 +209,6 @@ function delete_user(){
     res.status(500).json({ error });
 });
 };
-
-
-  //var User = require('./Sauce.js')
-
-  //User.deleteOne({_id:req.params.id})
-
-  /*
-  .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
-  .catch(error => res.status(400).json({ error }));
-
-  */
-
 
 
 })

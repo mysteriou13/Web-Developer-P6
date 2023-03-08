@@ -1,42 +1,25 @@
-const { callbackify } = require('util');
 
 module.exports = {
 
 
-  affiche_sauce: async function findOne(r) {
-    
-    const MongoClient = require('mongodb').MongoClient;
+ affiche_sauce: function(res){
 
-const url = 'mongodb://localhost:27017';
+    var MongoClient = require('mongodb').MongoClient;
+  var url = "mongodb://localhost:27017/";
+  
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("p6_oc");
+    dbo.collection("sauces").find({}).toArray(function(err, result) {
+      if (err) throw err;
+      res.status(200).json(result)
 
-    const client = await MongoClient.connect(url, { useNewUrlParser: true })
-        .catch(err => { console.log(err); });
+       db.close();
+    });
+  });
 
-    if (!client) {
-        return;
-    }
 
-    try {
 
-        const db = client.db("p6_oc");
-
-        let collection = db.collection('sauces');
-
-        let query = { name: 'Volkswagen' }
-
-        let res = await collection.find().toArray();
-
-        console.log(res.status(200).json());
-
-    } catch (err) {
-
-        console.log(err);
-    } finally {
-
-        client.close();
-    }
 }
-
-
 
 }
