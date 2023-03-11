@@ -213,6 +213,87 @@ function delete_user(){
 
 })
 
+
+
+app.put('/api/sauces/:id',upload.any(), (req, res) => {
+  
+  var pic = req.files;
+
+  var User = require('./Sauce.js')
+
+  /*verif si l'image est changer*/
+  if(typeof pic !== "undefined"){
+
+  var namepic = pic[0].originalname;
+
+  var namepic = namepic.split(".");
+
+  var extpic = namepic[1];
+
+  var namefile = pic[0].filename;
+
+  var url_file = `${req.protocol}://${req.get('host')}/uploads/`+namefile+"."+extpic;
+  
+}else{
+
+
+  User.findOne({_id:req.params.id})
+
+  .then(User => {
+   
+        url_file = User.imageUrl;
+    
+})
+.catch( error => {
+    res.status(500).json({ error });
+});
+
+
+}  
+
+console.log(req.body);
+
+/*
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("p6_oc");
+ 
+    console.log(req.body);
+    
+
+    var newvalues = { $set: {
+
+      namefile:namefile,
+      name : req.body.name,
+      manufacturer:req.body.name,
+      description:req.body.description,
+      mainPepper:req.body.mainPepper,
+      imageUrl:url_file,
+      heat:req.body.heat,
+      like:req.body.like,
+      dislikes:req.body.dislikes,
+      usersLiked:req.body.usersLiked,
+      usersDisliked:req.body.usersDisliked
+
+
+    } };
+
+
+  
+    
+    dbo.collection("sauces").updateOne(myquery, newvalues, function(err, res) {
+      if (err) throw err;
+      console.log("1 document updated");
+      db.close();
+    });
+*/
+    
+    
+  });
+ 
+
+  
+
 app.listen(3000, function() {
   console.log(`server listen at: http://localhost:3000/`);
 });
