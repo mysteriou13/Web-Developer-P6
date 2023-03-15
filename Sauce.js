@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+mongoose.set('strictQuery', true);
+
 var Schema = mongoose.Schema;
 
 

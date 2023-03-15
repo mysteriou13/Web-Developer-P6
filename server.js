@@ -1,4 +1,5 @@
 const express = require('express')
+const bodyParser = require("body-parser");
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
@@ -13,12 +14,13 @@ const  add_file  = require('./add_sauces.js');
 const upload = multer({ dest: 'uploads/' })
 
 const session = require("express-session");
-const cookieParser = require("cookie-parser");
+
 const affiche = require("./affiche_sauce.js");
 
 const path = require("path");
-
 app.use(express.json());
+
+app.use(bodyParser.json());
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -29,7 +31,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cookieParser());
+
  
 app.use(session({
     secret: "amar",
@@ -202,7 +204,18 @@ function delete_user(){
 
         var file = filename.split("uploads")
         
-       delete_file(file[1]);
+        console.log("delete file");
+
+        var User = require('./Sauce.js')
+          console.log("delete file",file);
+      
+          const fs = require('fs');
+      
+          fs.unlink(`./uploads/${file}`, () => {
+            User.deleteOne({_id: req.params.id})
+                .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
+                .catch(error => res.status(401).json({ error }));
+        });
     
 })
 .catch( error => {
@@ -214,85 +227,23 @@ function delete_user(){
 })
 
 
+  app.put('/api/sauces/:id', upload.single('image'),function (req, res, next) {
 
-app.put('/api/sauces/:id',upload.any(), (req, res) => {
-  
-  var pic = req.files;
+    add_file.add_file();
 
-  var User = require('./Sauce.js')
+    const thingObject = req.file ? {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+  } : { ...req.body };
 
-  /*verif si l'image est changer*/
-  if(typeof pic !== "undefined"){
+  var sauce = require("./Sauce.js");
 
-  var namepic = pic[0].originalname;
-
-  var namepic = namepic.split(".");
-
-  var extpic = namepic[1];
-
-  var namefile = pic[0].filename;
-
-  var url_file = `${req.protocol}://${req.get('host')}/uploads/`+namefile+"."+extpic;
-  
-}else{
-
-
-  User.findOne({_id:req.params.id})
-
-  .then(User => {
-   
-        url_file = User.imageUrl;
-    
-})
-.catch( error => {
-    res.status(500).json({ error });
-});
-
-
-}  
-
-console.log(req.body);
-
-/*
-  MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("p6_oc");
- 
-    console.log(req.body);
-    
-
-    var newvalues = { $set: {
-
-      namefile:namefile,
-      name : req.body.name,
-      manufacturer:req.body.name,
-      description:req.body.description,
-      mainPepper:req.body.mainPepper,
-      imageUrl:url_file,
-      heat:req.body.heat,
-      like:req.body.like,
-      dislikes:req.body.dislikes,
-      usersLiked:req.body.usersLiked,
-      usersDisliked:req.body.usersDisliked
-
-
-    } };
-
+sauce.updateOne({ _id: req.params.id}, { ...thingObject, _id: req.params.id})
+  .then(() => res.status(200).json({message : 'Objet modifié!'}))
+  .catch(error => res.status(401).json({ error }));
 
   
-    
-    dbo.collection("sauces").updateOne(myquery, newvalues, function(err, res) {
-      if (err) throw err;
-      console.log("1 document updated");
-      db.close();
-    });
-*/
-    
-    
-  });
- 
-
-  
+  })
 
 app.listen(3000, function() {
   console.log(`server listen at: http://localhost:3000/`);
