@@ -17,6 +17,8 @@ const session = require("express-session");
 
 const affiche = require("./affiche_sauce.js");
 
+const like = require("./like.js");
+
 const path = require("path");
 app.use(express.json());
 
@@ -243,6 +245,31 @@ sauce.updateOne({ _id: req.params.id}, { ...thingObject, _id: req.params.id})
   .catch(error => res.status(401).json({ error }));
 
   
+  })
+
+
+
+  app.post('/api/sauces/:id/like',function (req, res, next) {
+
+    var sauce = require("./Sauce.js");
+   
+ 
+
+
+  sauce.updateOne(
+      { _id: req.params.id },
+      { $inc: { likes: 1 } },
+
+    )
+    .then(result => {
+      console.log(`Mise à jour de l'enregistrement avec succès !`);
+    })
+    .catch(error => {
+      console.error(`Erreur lors de la mise à jour de l'enregistrement : ${error}`);
+    });
+  
+    res.status(200).json({message : 'Objet modifié!'})
+
   })
 
 app.listen(3000, function() {

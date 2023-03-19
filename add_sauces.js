@@ -67,10 +67,12 @@ module.exports = {
            const decodedToken = jwt.verify(token, 'shhhhh');
            const userId = decodedToken.userId;
     
+           var tab =  [];
+
            /*data pour la base*/
         var data = {userId: a2[5], id_sauce: namefile, namefile:namefile+"."+extpic , name : a2[0],  manufacturer : a2[1], description : a2[2], 
            mainPepper : a2[3], "imageUrl" :  `${req.protocol}://${req.get('host')}/uploads/`+namefile+"."+extpic, heat : a2[4], 
-           like : 0,  dislikes : 0, usersLiked:0, usersDisliked: 0,} 
+           likes : 0,  dislikes : 0, usersLiked:tab, usersDisliked: tab,} 
     
             /*ajouter extension pour l'image*/
             var fs = require('fs');
