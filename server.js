@@ -20,6 +20,8 @@ const affiche = require("./affiche_sauce.js");
 const like = require("./like.js");
 
 const path = require("path");
+const { buildWebpackBrowser } = require('@angular-devkit/build-angular/src/builders/browser/index.js');
+
 app.use(express.json());
 
 app.use(bodyParser.json());
@@ -254,23 +256,74 @@ sauce.updateOne({ _id: req.params.id}, { ...thingObject, _id: req.params.id})
     var sauce = require("./Sauce.js");
    
  
+    const sauceId = req.params.id;
+    const userId = req.body.userId;
+    const like = req.body.like;
 
+    /*like sauce*/
+    
+    if (like === 1) {
+      sauce.updateOne(
+        { _id: sauceId },
+        {
+          $inc: { likes: +1},
+          $pull: { usersDisliked: userId },
+          $addToSet: { usersLiked: userId }
+        }
+      )
+        .then((sauce) => res.status(200).json({ message: "Sauce appréciée" }))
+        .catch((error) => res.status(500).json({ error }));
+    }
 
-  sauce.updateOne(
-      { _id: req.params.id },
-      { $inc: { likes: 1 } },
+    /*back like dislikes*/
+    if(like == 0){
 
-    )
-    .then(result => {
-      console.log(`Mise à jour de l'enregistrement avec succès !`);
-    })
-    .catch(error => {
-      console.error(`Erreur lors de la mise à jour de l'enregistrement : ${error}`);
-    });
+      const { MongoClient, ObjectId } = require('mongodb');
+      const url = 'mongodb://localhost:27017/';
+      const dbName = 'p6_oc';
+      
+      MongoClient.connect(url, function(err, client) {
+        if (err) throw err;
+        
+        const db = client.db(dbName);
+        const collection = db.collection("sauces");
+        const query = { _id: new ObjectId(req.params.id) };
+        const update = { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId } };
+      
+        collection.findOneAndUpdate(query, update, function(err, result) {
+          if (err) throw err;
+          console.log(result);
+          client.close();
+        });
+
+        res.end();
+        
+      });
   
-    res.status(200).json({message : 'Objet modifié!'})
+  }
+
+
+    /**dislike sauce*/
+
+    if (like === -1) {
+      sauce.updateOne(
+        { _id: sauceId },
+        {
+          $inc: { dislikes: -1},
+          $addToSet: { usersDisliked: userId },
+          $pull: { usersLiked: userId },
+
+        }
+      )
+        .then((sauce) => res.status(200).json({ message: "Sauce dépréciée" }))
+        .catch((error) => res.status(500).json({ error }));
+    }
+
+
+
 
   })
+
 
 app.listen(3000, function() {
   console.log(`server listen at: http://localhost:3000/`);
