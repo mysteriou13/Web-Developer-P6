@@ -59,16 +59,14 @@ app.get('/',function(req,res){
 /*ajout des sauces*/
 
 app.post('/api/sauces', upload.any(), function (req, res, next) {
-
+console.log("add sauces");
  
   add_sauce.add_file();
 
   
   
       add_sauce.add_sauces(req,res);
-
-    
-  
+res.redirect("./sauces");
 
 })
 
@@ -182,6 +180,8 @@ app.delete('/api/sauces/:id', (req, res) => {
           .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
           .catch(error => res.status(401).json({ error }));
   });
+
+
     
   }
 
@@ -226,6 +226,7 @@ function delete_user(){
     res.status(500).json({ error });
 });
 };
+
 
 
 })
