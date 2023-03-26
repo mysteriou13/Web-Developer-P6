@@ -262,65 +262,73 @@ sauce.updateOne({ _id: req.params.id}, { ...thingObject, _id: req.params.id})
 
     /*like sauce*/
     
-    if (like === 1) {
-      sauce.updateOne(
-        { _id: sauceId },
-        {
-          $inc: { likes: +1},
-          $pull: { usersDisliked: userId },
-          $addToSet: { usersLiked: userId }
-        }
-      )
-        .then((sauce) => res.status(200).json({ message: "Sauce appréciée" }))
-        .catch((error) => res.status(500).json({ error }));
+    /*like sauce*/
+if (like === 1) {
+  sauce.updateOne(
+    { _id: sauceId },
+    {
+      $inc: { likes: +1},
+      $pull: { usersDisliked: userId },
+      $addToSet: { usersLiked: userId }
     }
+  )
+    .then((sauce) => res.status(200).json({ message: "Sauce appréciée" }))
+    .catch((error) => res.status(500).json({ error }));
+}
 
-    /*back like dislikes*/
-    if(like == 0){
+/*dislike sauce*/
+if (like === -1) {
+  sauce.updateOne(
+    { _id: sauceId },
+    {
+      $inc: { dislikes: +1},
+      $addToSet: { usersDisliked: userId },
+      $pull: { usersLiked: userId },
+    }
+  )
+    .then((sauce) => res.status(200).json({ message: "Sauce dépréciée" }))
+    .catch((error) => res.status(500).json({ error }));
+}
 
-      const { MongoClient, ObjectId } = require('mongodb');
-      const url = 'mongodb://localhost:27017/';
-      const dbName = 'p6_oc';
-      
-      MongoClient.connect(url, function(err, client) {
-        if (err) throw err;
-        
-        const db = client.db(dbName);
-        const collection = db.collection("sauces");
-        const query = { _id: new ObjectId(req.params.id) };
-        const update = { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId } };
-      
-        collection.findOneAndUpdate(query, update, function(err, result) {
-          if (err) throw err;
-          console.log(result);
-          client.close();
-        });
-
-        res.end();
-        
-      });
+/*back like and dislikes*/
+if (like == 0) {
+  const { MongoClient, ObjectId } = require('mongodb');
+  const url = 'mongodb://localhost:27017/';
+  const dbName = 'p6_oc';
   
-  }
+  MongoClient.connect(url, function(err, client) {
+    if (err) throw err;
+    
+    const db = client.db(dbName);
+    const collection = db.collection("sauces");
+    const query = { _id: new ObjectId(req.params.id) };
+    const update = { $pull: { usersLiked: req.body.userId, usersDisliked: req.body.userId } };
 
+    collection.findOne(query, function(err, result) {
+      if (err) throw err;
 
-    /**dislike sauce*/
+      // Condition pour vérifier si le nombre de likes est supérieur à zéro
+      if (result.likes > 0) {
+        update.$inc = { likes: -1 };
+      }
 
-    if (like === -1) {
-      sauce.updateOne(
-        { _id: sauceId },
-        {
-          $inc: { dislikes: -1},
-          $addToSet: { usersDisliked: userId },
-          $pull: { usersLiked: userId },
+      // Condition pour vérifier si le nombre de dislikes est supérieur à zéro
+      if (result.dislikes > 0) {
+        update.$inc = { dislikes: -1 };
+      }
 
-        }
-      )
-        .then((sauce) => res.status(200).json({ message: "Sauce dépréciée" }))
-        .catch((error) => res.status(500).json({ error }));
-    }
+      collection.findOneAndUpdate(query, update, function(err, result) {
+        if (err) throw err;
+       
+        client.close();
+      });
+    });
 
+    res.end();
+  });
+}
 
-
+    console.log("end route soute")
 
   })
 
