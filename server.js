@@ -21,6 +21,10 @@ const affiche = require("./affiche_sauce.js");
 const like = require("./like.js");
 
 const path = require("path");
+
+const route_singup = require("./route/singup.js");
+
+
 app.use(express.json());
 
 app.use(bodyParser.json());
@@ -120,20 +124,8 @@ app.use(express.json());
 
 /*route inscription*/
 
-app.post('/api/auth/signup', function (req, res) {
+app.use('/api/auth/signup', route_singup);
 
-
-  bcrypt.genSalt(saltRounds, function(err, salt) {
-    bcrypt.hash(req.body.password, salt, function(err, hash) {
-
-      tools.singup(req,hash,res);
-
-    });
-});
-console.log("sinup");
-
-
-});
 
 /*route connection*/
 

@@ -1,5 +1,5 @@
-module.exports = {
-    singup: function(req,hash,res) {
+
+function signup(req,hash,res) {
 
         let MongoClient = require('mongodb').MongoClient;
         let connectionUrl = "mongodb://localhost:27017/p6_oc";
@@ -45,11 +45,11 @@ module.exports = {
         
     
  res.end();
-    },
+    }
     
     /*login user*/
 
-    login: function(email,pass,res) {
+     function login (email,pass,res) {
 
         let MongoClient = require('mongodb').MongoClient;
   let connectionUrl = "mongodb://localhost:27017/p6_oc";
@@ -122,6 +122,10 @@ module.exports = {
 
   });
         
-    },
+    }
+
+    module.exports = {
+        signup: signup,
+        login: login
+      };
  
-};
