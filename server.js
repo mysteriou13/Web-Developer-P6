@@ -24,6 +24,8 @@ const path = require("path");
 
 const route_singup = require("./route/singup.js");
 
+const route_login = require("./route/login.js");
+
 
 app.use(express.json());
 
@@ -129,14 +131,7 @@ app.use('/api/auth/signup', route_singup);
 
 /*route connection*/
 
-app.post('/api/auth/login', (req, res, next) => {
-
-  tools.login(req.body.email, req.body.password,res,ssn);
-
-  ssn = req.session;
- ssnemail =req.body.email;
-
-});
+app.use('/api/auth/login',route_login);
 
 
 /*affichage des sauces */
