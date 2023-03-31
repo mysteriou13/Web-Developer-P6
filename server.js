@@ -26,6 +26,7 @@ const route_singup = require("./route/singup.js");
 
 const route_login = require("./route/login.js");
 
+const handleGetRequest = require('./route/route_add_sauce.js');
 
 app.use(express.json());
 
@@ -135,14 +136,7 @@ app.use('/api/auth/login',route_login);
 
 
 /*affichage des sauces */
-app.get('/api/sauces', (req, res, next) => {
-
-  console.log("api sauces");
-
-  affiche.affiche_sauce(res);
-
-
-})
+app.get('/api/sauces', handleGetRequest);
 
 
 app.get('/api/sauces/:id', (req, res, next) => {
