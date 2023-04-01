@@ -26,6 +26,8 @@ const route_singup = require("./route/singup.js");
 
 const route_login = require("./route/login.js");
 
+const one_sauce = require("./route/affiche_one_sauce.js");
+
 const handleGetRequest = require('./route/route_add_sauce.js');
 
 app.use(express.json());
@@ -139,27 +141,9 @@ app.use('/api/auth/login',route_login);
 app.get('/api/sauces', handleGetRequest);
 
 
-app.get('/api/sauces/:id', (req, res, next) => {
 
-
-  mongoose.connect('mongodb://localhost:27017/p6_oc',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
-
-  console.log("get sauces")
-
-  var User = require('./Sauce.js')
-
-
-  User.findOne({_id:req.params.id})
-
-  .then(User => res.status(200).json(User))
-  .catch(error => res.status(404).json({ error }));
-
-
-})
+/*affichage d'une sauce*/
+app.get('/api/sauces/:id', one_sauce);
 
 
 app.delete('/api/sauces/:id', (req, res) => {
