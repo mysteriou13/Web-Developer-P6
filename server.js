@@ -30,6 +30,8 @@ const one_sauce = require("./route/affiche_one_sauce.js");
 
 const handleGetRequest = require('./route/route_add_sauce.js');
 
+const delete_sauce = require("./route/delete_sauce.js");
+
 app.use(express.json());
 
 app.use(bodyParser.json());
@@ -85,7 +87,7 @@ server.on('listening', () => {
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DE^LETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
 
@@ -129,8 +131,7 @@ app.use(express.json());
 
 /*route inscription*/
 
-app.use('/api/auth/signup', route_singup);
-
+app.use('/api/auth/signup', route_singup)
 
 /*route connection*/
 
@@ -138,108 +139,17 @@ app.use('/api/auth/login',route_login);
 
 
 /*affichage des sauces */
-app.get('/api/sauces', handleGetRequest);
+app.get('/api/sauces', handleGetRequest)
 
 
 
 /*affichage d'une sauce*/
-app.get('/api/sauces/:id', one_sauce);
+app.get('/api/sauces/:id', one_sauce)
 
 
-app.delete('/api/sauces/:id', (req, res) => {
+/*delete sauces*/
 
-  
-
-  var MongoClient = require('mongodb').MongoClient;
-  var url = "mongodb://localhost:27017/";
-  
-  MongoClient.connect(url, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("p6_oc");
-
-    dbo.collection("User").findOne({email:ssnemail}, function(err, result) {
-
-      if(result){
-      
-        console.log("result user");
-
-        delete_user();
-   
-          }else{
-
-            console.log("error user");
-
-          }
-  
-      
-      db.close();
-    });
-  });
-
-  function delete_file(file){
-
-    console.log("delete file");
-
-  var User = require('./Sauce.js')
-    console.log("delete file",file);
-
-    const fs = require('fs');
-
-    fs.unlink(`./uploads/${file}`, () => {
-      User.deleteOne({_id: req.params.id})
-          .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
-          .catch(error => res.status(401).json({ error }));
-  });
-
-
-    
-  }
-
-    
-function delete_user(){
-
-  mongoose.connect('mongodb://localhost:27017/p6_oc',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
-
-  console.log("get sauces")
-
-  var User = require('./Sauce.js')
-
-
-  User.findOne({_id:req.params.id})
-
-  .then(User => {
-   
-        var filename = User.imageUrl;
-
-
-        var file = filename.split("uploads")
-        
-        console.log("delete file");
-
-        var User = require('./Sauce.js')
-          console.log("delete file",file);
-      
-          const fs = require('fs');
-      
-          fs.unlink(`./uploads/${file}`, () => {
-            User.deleteOne({_id: req.params.id})
-                .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
-                .catch(error => res.status(401).json({ error }));
-        });
-    
-})
-.catch( error => {
-    res.status(500).json({ error });
-});
-};
-
-
-
-})
+app.use('/api/sauces/:id', delete_sauce);
 
 
   app.put('/api/sauces/:id', upload.single('image'),function (req, res, next) {
@@ -312,7 +222,7 @@ if (like == 0) {
     
     const db = client.db(dbName);
     const collection = db.collection("sauces");
-    const query = { _id: new ObjectId(req.params.id) };
+    const query = { _id: new ObjectId(req.params.id) };ff
     const update = { $pull: { usersLiked: req.body.userId, usersDisliked: req.body.userId } };
 
     collection.findOne(query, function(err, result) {
