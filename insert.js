@@ -1,52 +1,60 @@
 
 function signup(req,hash,res) {
 
-  const express = require('express');
-const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
-
-const app = express();
-
-// Connexion à la base de données MongoDB
-mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
-
-// Définition du modèle utilisateur avec Mongoose
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
-
-userSchema.plugin(uniqueValidator);
-
-const User = mongoose.model('User', userSchema);
-
-// Route pour créer un nouvel utilisateur
-app.post('/users', (req, res) => {
-  const { email, password } = req.body;
-
-  const newUser = new User({ email, hash });
-  newUser.save((err) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send('Une erreur est survenue lors de la création de l\'utilisateur.');
-    } else {
-      console.log('Utilisateur créé avec succès !');
-      res.send('Utilisateur créé avec succès !');
-    }
+  let MongoClient = require('mongodb').MongoClient;
+  let connectionUrl = "mongodb://localhost:27017/p6_oc";
+  const uniqueValidator = require('mongoose-unique-validator');
+  const mongoose = require('mongoose');
+  
+  // creating the message object
+  let user = {"email" : req.body.email, "password": hash};
+  
+  // connect to MongoDB
+  MongoClient.connect(connectionUrl, function(err, client) {
+    if (err) throw err;
+  
+    // if database and collection do not exist they are created
+    var db = client.db('p6_oc');
+  
+    // define the user schema
+    const userSchema = new mongoose.Schema({
+      email: { type: String, required: true, unique: true },
+      password: { type: String, required: true }
+    });
+  
+    // add the unique validator plugin to the schema
+    userSchema.plugin(uniqueValidator, { message: 'Erreur, email déjà existant.' });
+  
+    // define the User model
+    const User = mongoose.models.User || mongoose.model('User', userSchema);
+  
+    // create a new user instance
+    const new_user = new User({
+      email: req.body.email,
+      password: hash
+    });
+  
+    // find the user with the specified email
+    db.collection("User").findOne({ email: req.body.email }, function(err, obj) {
+      if (err) throw err;
+  
+      // if the user does not exist, insert the new user into the database
+      if (obj === null) {
+        db.collection("User").insertOne(new_user, function(err, res) {
+          if (err) throw err;
+  
+          console.log("User inserted");
+          client.close();
+        });
+      } else {
+        console.log("User already exists");
+        client.close();
+      }
+    });
   });
-});
-
-
-res.end();
+  
+  res.end();
+  
 
     }
     
