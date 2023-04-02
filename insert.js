@@ -1,50 +1,53 @@
 
 function signup(req,hash,res) {
 
-        let MongoClient = require('mongodb').MongoClient;
-        let connectionUrl = "mongodb://localhost:27017/p6_oc";
-        // or
-        // let connectionUrl = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
-        
-        // creating the message object
-        let user = {"email" : req.body.email, "password": hash};
-        
-        
-        /*connection a la base  donn*/
-        MongoClient.connect(connectionUrl, function(err, client,res) {
-            if (err) throw err;
-        
-        
-            // if database and collection do not exist they are created */
-            
-            var db = client.db('p6_oc')
+  const express = require('express');
+const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
-            let user = {"email" : req.body.email, "password": hash};
-        
+const app = express();
 
-        db.collection("User").findOne({email:req.body.email }, function(err,obj,res) {
-                
-            if(obj === null){
+// Connexion à la base de données MongoDB
+mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-                db.collection("User").insertOne(user, function(err, res) {
-                   
+// Définition du modèle utilisateur avec Mongoose
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
 
-                    client.close();
-                        
+userSchema.plugin(uniqueValidator);
 
-                
-                });
+const User = mongoose.model('User', userSchema);
 
-            }
+// Route pour créer un nouvel utilisateur
+app.post('/users', (req, res) => {
+  const { email, password } = req.body;
 
-        });
-         
-           
-        
-        });
-        
-    
- res.end();
+  const newUser = new User({ email, hash });
+  newUser.save((err) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Une erreur est survenue lors de la création de l\'utilisateur.');
+    } else {
+      console.log('Utilisateur créé avec succès !');
+      res.send('Utilisateur créé avec succès !');
+    }
+  });
+});
+
+
+res.end();
+
     }
     
     /*login user*/
