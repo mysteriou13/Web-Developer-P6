@@ -30,14 +30,14 @@ var ext1 = ext.split(".");
 
 
   MongoClient.connect(url, function(err, client) {
-    if (err) throw err;
+
 
     const db = client.db('p6_oc');
     db.collection(nomDeLaCollection).findOne({_id: ObjectId(req.params.id)}, function(err, result) {
-      if (err) throw err;
+
 
       fs.unlink('./uploads/'+result.namefile, (err) => {
-        if (err) throw err;
+     
         console.log('Le fichier a été supprimé avec succès');
       });
 
