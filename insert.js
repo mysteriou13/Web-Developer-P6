@@ -1,50 +1,60 @@
 
 function signup(req,hash,res) {
 
-        let MongoClient = require('mongodb').MongoClient;
-        let connectionUrl = "mongodb://localhost:27017/p6_oc";
-        // or
-        // let connectionUrl = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
-        
-        // creating the message object
-        let user = {"email" : req.body.email, "password": hash};
-        
-        
-        /*connection a la base  donn*/
-        MongoClient.connect(connectionUrl, function(err, client,res) {
-            if (err) throw err;
-        
-        
-            // if database and collection do not exist they are created */
-            
-            var db = client.db('p6_oc')
-
-            let user = {"email" : req.body.email, "password": hash};
-        
-
-        db.collection("User").findOne({email:req.body.email }, function(err,obj,res) {
-                
-            if(obj === null){
-
-                db.collection("User").insertOne(user, function(err, res) {
-                   
-
-                    client.close();
-                        
-
-                
-                });
-
-            }
-
+  let MongoClient = require('mongodb').MongoClient;
+  let connectionUrl = "mongodb://localhost:27017/p6_oc";
+  const uniqueValidator = require('mongoose-unique-validator');
+  const mongoose = require('mongoose');
+  
+  // creating the message object
+  let user = {"email" : req.body.email, "password": hash};
+  
+  // connect to MongoDB
+  MongoClient.connect(connectionUrl, function(err, client) {
+    if (err) throw err;
+  
+    // if database and collection do not exist they are created
+    var db = client.db('p6_oc');
+  
+    // define the user schema
+    const userSchema = new mongoose.Schema({
+      email: { type: String, required: true, unique: true },
+      password: { type: String, required: true }
+    });
+  
+    // add the unique validator plugin to the schema
+    userSchema.plugin(uniqueValidator, { message: 'Erreur, email déjà existant.' });
+  
+    // define the User model
+    const User = mongoose.models.User || mongoose.model('User', userSchema);
+  
+    // create a new user instance
+    const new_user = new User({
+      email: req.body.email,
+      password: hash
+    });
+  
+    // find the user with the specified email
+    db.collection("User").findOne({ email: req.body.email }, function(err, obj) {
+      if (err) throw err;
+  
+      // if the user does not exist, insert the new user into the database
+      if (obj === null) {
+        db.collection("User").insertOne(new_user, function(err, res) {
+          if (err) throw err;
+  
+          console.log("User inserted");
+          client.close();
         });
-         
-           
-        
-        });
-        
-    
- res.end();
+      } else {
+        console.log("User already exists");
+        client.close();
+      }
+    });
+  });
+  
+  res.end();
+  
     }
     
     /*login user*/
