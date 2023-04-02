@@ -32,6 +32,8 @@ const handleGetRequest = require('./route/route_add_sauce.js');
 
 const delete_sauce = require("./route/delete_sauce.js");
 
+const update_sauce = require("./route/update_sauce.js");
+
 app.use(express.json());
 
 app.use(bodyParser.json());
@@ -152,25 +154,9 @@ app.get('/api/sauces/:id', one_sauce)
 app.use(delete_sauce);
 
 
-  app.put('/api/sauces/:id', upload.single('image'),function (req, res, next) {
+/*update sauce*/
 
-    add_file.add_file();
-
-    const thingObject = req.file ? {
-      ...JSON.parse(req.body.sauce),
-      imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
-  } : { ...req.body };
-
-  var sauce = require("./Sauce.js");
-
-sauce.updateOne({ _id: req.params.id}, { ...thingObject, _id: req.params.id})
-  .then(() => res.status(200).json({message : 'Objet modifié!'}))
-  .catch(error => res.status(401).json({ error }));
-
-  
-  })
-
-
+app.use(update_sauce);
 
   app.post('/api/sauces/:id/like',function (req, res, next) {
 
