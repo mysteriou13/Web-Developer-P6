@@ -149,7 +149,7 @@ app.get('/api/sauces/:id', one_sauce)
 
 /*delete sauces*/
 
-app.use('/api/sauces/:id', delete_sauce);
+app.use(delete_sauce);
 
 
   app.put('/api/sauces/:id', upload.single('image'),function (req, res, next) {
