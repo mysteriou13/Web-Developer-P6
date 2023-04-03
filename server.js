@@ -24,6 +24,10 @@ const like_sauce = require("./route/like_sauces.js");
 
 const http_server = require("./http_server.js");
 
+const helmet = require('helmet');
+
+
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -63,6 +67,9 @@ app.use(update_sauce);
 
 /*like  sauce*/
 app.use(like_sauce);
+
+
+app.use(helmet());
 
 app.listen(3000, function() {
   console.log(`server listen at: http://localhost:3000/`);

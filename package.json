@@ -29,6 +29,7 @@
     "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "get-form-data": "^3.0.0",
+    "helmet": "^6.0.1",
     "json-parser": "^3.1.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.9.1",

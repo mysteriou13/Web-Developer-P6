@@ -5,40 +5,38 @@ function signup(req,hash,res) {
   let connectionUrl = "mongodb://localhost:27017/p6_oc";
   const uniqueValidator = require('mongoose-unique-validator');
   const mongoose = require('mongoose');
-  
-  // creating the message object
-  let user = {"email" : req.body.email, "password": hash};
-  
-  // connect to MongoDB
+    
+  // connection mongodb
   MongoClient.connect(connectionUrl, function(err, client) {
     if (err) throw err;
   
-    // if database and collection do not exist they are created
+
+    // verif si la base de donné et la collection existe 
     var db = client.db('p6_oc');
   
-    // define the user schema
+    // definie le user schema
     const userSchema = new mongoose.Schema({
       email: { type: String, required: true, unique: true },
       password: { type: String, required: true }
     });
   
-    // add the unique validator plugin to the schema
+    // ajout le unique validator  pour schema
     userSchema.plugin(uniqueValidator, { message: 'Erreur, email déjà existant.' });
   
-    // define the User model
+    // definie le User model
     const User = mongoose.models.User || mongoose.model('User', userSchema);
   
-    // create a new user instance
+    // créer un nouveau user instance
     const new_user = new User({
       email: req.body.email,
       password: hash
     });
   
-    // find the user with the specified email
+    //  chercher utilisateur avec l'email
     db.collection("User").findOne({ email: req.body.email }, function(err, obj) {
       if (err) throw err;
   
-      // if the user does not exist, insert the new user into the database
+      // si  utilisateur exsite pas  il ajouter  a la base donné
       if (obj === null) {
         db.collection("User").insertOne(new_user, function(err, res) {
           if (err) throw err;
@@ -58,7 +56,7 @@ function signup(req,hash,res) {
 
     }
     
-    /*login user*/
+    /* function login*/
 
      function login (email,pass,res) {
 
@@ -70,8 +68,7 @@ function signup(req,hash,res) {
  let t = 0;
 
   const saltRounds = 10;
-  // or
-  // let connectionUrl = "mongodb+srv://<username>:<password>@<your-cluster-url>/test?retryWrites=true&w=majority";
+
   
   // creating the message object
   let user = {"email" : email, "pass": pass,"resut":null, "stat":res.status(200)};
