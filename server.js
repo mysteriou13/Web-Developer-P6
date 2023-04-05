@@ -22,9 +22,14 @@ const delete_sauce = require("./route/delete_sauce.js");
 const update_sauce = require("./route/update_sauce.js");
 const like_sauce = require("./route/like_sauces.js");
 
+const { verifyToken } = require('./verif_token.js');
+
 const http_server = require("./http_server.js");
 
 const helmet = require('helmet');
+
+
+
 
 
 
@@ -54,10 +59,11 @@ app.use('/api/auth/signup', route_singup)
 app.use('/api/auth/login',route_login);
 
 /*affichage des sauces */
-app.get('/api/sauces', handleGetRequest)
+
+app.get('/api/sauces', verifyToken, handleGetRequest);
 
 /*affichage d'une sauce*/
-app.get('/api/sauces/:id', one_sauce)
+app.get('/api/sauces/:id', verifyToken ,one_sauce)
 
 /*delete sauces*/
 app.use(delete_sauce);

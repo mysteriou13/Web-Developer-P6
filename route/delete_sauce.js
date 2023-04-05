@@ -3,7 +3,9 @@ const router = express.Router();
 const fs = require('fs');
 const Sauce = require('../Sauce.js');
 
-router.delete('/api/sauces/:id', (req, res) => {
+const { verifyToken } = require('../verif_token.js');
+
+router.delete('/api/sauces/:id', verifyToken, (req, res) => {
   console.log('delete sauces');
 
   Sauce.findOne({ _id: req.params.id })

@@ -2,7 +2,11 @@
 const express = require('express');
 const router = express.Router();
 
-router.post('/api/sauces/:id/like',function (req, res, next) {
+
+const { verifyToken } = require('../verif_token.js');
+
+
+router.post('/api/sauces/:id/like', verifyToken,function (req, res, next) {
 
     var sauce = require("../Sauce.js");
    

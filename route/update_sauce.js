@@ -15,11 +15,11 @@ const url = 'mongodb://localhost:27017/';
 
 const nomDeLaCollection = 'sauces';
 
-
+const { verifyToken } = require('../verif_token.js');
 
 router.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-router.put('/api/sauces/:id', upload.single('image'), function (req, res, next) {
+router.put('/api/sauces/:id',verifyToken ,upload.single('image'), function (req, res, next) {
 
   var ext = req.file.originalname;
 

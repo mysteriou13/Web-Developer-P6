@@ -4,6 +4,7 @@ module.exports = {
 
  affiche_sauce: function(res){
 
+
     var MongoClient = require('mongodb').MongoClient;
   var url = "mongodb://localhost:27017/";
   
