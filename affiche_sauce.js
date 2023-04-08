@@ -19,6 +19,6 @@ module.exports = {
             db.close();
           });
       })
-      .catch(error => errorHandler(error, res));
+      
   }
 };
