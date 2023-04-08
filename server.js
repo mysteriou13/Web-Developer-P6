@@ -17,7 +17,7 @@ const path = require("path");
 const route_singup = require("./route/singup.js");
 const route_login = require("./route/login.js");
 const one_sauce = require("./route/affiche_one_sauce.js");
-const handleGetRequest = require('./route/route_add_sauce.js');
+const  route_add_sauce = require('./route/route_add_sauce.js');
 const delete_sauce = require("./route/delete_sauce.js");
 const update_sauce = require("./route/update_sauce.js");
 const like_sauce = require("./route/like_sauces.js");
@@ -28,7 +28,9 @@ const http_server = require("./http_server.js");
 
 const helmet = require('helmet');
 
+const errorHandler = require('mongoose-error-handler');
 
+const sauce = require("./Sauce.js");
 
 
 
@@ -60,7 +62,7 @@ app.use('/api/auth/login',route_login);
 
 /*affichage des sauces */
 
-app.get('/api/sauces', verifyToken, handleGetRequest);
+app.get('/api/sauces', verifyToken, route_add_sauce);
 
 /*affichage d'une sauce*/
 app.get('/api/sauces/:id', verifyToken ,one_sauce)
