@@ -53,7 +53,18 @@ router.post('/api/sauces/:id/like', verifyToken,function (req, res, next) {
     }
   )
     .then((sauce) => res.status(200).json({ message: "Sauce dépréciée" }))
-    .catch((error) => res.status(500).json({ error }));
+    
+    .catch(error => {
+      console.error(error);
+      if (error instanceof MongooseError) {
+         console.log(error);
+      } else {
+        
+         console.log(error);
+
+      }
+    });
+
   }
   
   /*back like and dislikes*/
@@ -61,37 +72,44 @@ router.post('/api/sauces/:id/like', verifyToken,function (req, res, next) {
   const { MongoClient, ObjectId } = require('mongodb');
   const url = 'mongodb://localhost:27017/';
   const dbName = 'p6_oc';
+ 
   
-  MongoClient.connect(url, function(err, client) {
+  const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
+
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
+  if (err) throw err;
+  
+  const collection = mongoose.connection.collection('sauces');
+  const query = { _id: new ObjectId(req.params.id) };
+  const update = { $pull: { usersLiked: req.body.userId, usersDisliked: req.body.userId } };
+
+  collection.findOne(query, function(err, result) {
     if (err) throw err;
-    
-    const db = client.db(dbName);
-    const collection = db.collection("sauces");
-    const query = { _id: new ObjectId(req.params.id) };
-    const update = { $pull: { usersLiked: req.body.userId, usersDisliked: req.body.userId } };
-  
-    collection.findOne(query, function(err, result) {
+
+    // Condition pour vérifier si le nombre de likes est supérieur à zéro
+    if (result.likes > 0) {
+      update.$inc = { likes: -1 };
+    }
+
+    // Condition pour vérifier si le nombre de dislikes est supérieur à zéro
+    if (result.dislikes > 0) {
+      update.$inc = { dislikes: -1 };
+    }
+
+    collection.findOneAndUpdate(query, update, function(err, result) {
       if (err) throw err;
-  
-      // Condition pour vérifier si le nombre de likes est supérieur à zéro
-      if (result.likes > 0) {
-        update.$inc = { likes: -1 };
-      }
-  
-      // Condition pour vérifier si le nombre de dislikes est supérieur à zéro
-      if (result.dislikes > 0) {
-        update.$inc = { dislikes: -1 };
-      }
-  
-      collection.findOneAndUpdate(query, update, function(err, result) {
-        if (err) throw err;
-       
-        client.close();
-      });
+     
+      mongoose.connection.close();
     });
-  
-    res.end();
   });
+
+  res.end();
+});
+
+ 
+
+
   }
   
     console.log("end route soute")
