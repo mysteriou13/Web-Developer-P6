@@ -12,7 +12,7 @@ function one_sauce(req, res, next) {
     .then(sauce => res.status(200).json(sauce))
     .catch(error => {
       const formattedError = new mongoose.Error(error.message);
-      res.status(404).json({ error: formattedError });
+   
     });
 }
 
