@@ -1,6 +1,4 @@
-
 const mongoose = require('mongoose');
-const { MongooseError } = require('mongoose');
 const Sauce = require('../Sauce.js');
 
 function one_sauce(req, res, next) {
@@ -13,7 +11,7 @@ function one_sauce(req, res, next) {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => res.status(200).json(sauce))
     .catch(error => {
-      const formattedError = new MongooseError(error.message, error.name, error.code);
+      const formattedError = new mongoose.Error(error.message);
       res.status(404).json({ error: formattedError });
     });
 }

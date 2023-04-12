@@ -1,120 +1,101 @@
-
 const express = require('express');
 const router = express.Router();
 
 const { verifyToken } = require('../verif_token.js');
 
-const { MongooseError } = require('mongoose');
+const Sauce = require("../Sauce.js");
 
-router.post('/api/sauces/:id/like', verifyToken,function (req, res, next) {
+router.post('/api/sauces/:id/like', verifyToken, function (req, res, next) {
+  
+  const sauceId = req.params.id;
+  const userId = req.body.userId;
+  const like = req.body.like;
 
-    var sauce = require("../Sauce.js");
-   
-  
-    const sauceId = req.params.id;
-    const userId = req.body.userId;
-    const like = req.body.like;
-  
-    /*like sauce*/
-    
-    /*like sauce*/
+  /* like sauce */
+
   if (like === 1) {
-  sauce.updateOne(
-    { _id: sauceId },
-    {
-      $inc: { likes: +1},
-      $pull: { usersDisliked: userId },
-      $addToSet: { usersLiked: userId }
-    }
-  )
-    .then((sauce) => res.status(200).json({ message: "Sauce appréciée" }))
-    
-    .catch(error => {
-      console.error(error);
-      if (error instanceof MongooseError) {
-         console.log(error);
-      } else {
-        
-         console.log(error);
-
+    Sauce.updateOne(
+      { _id: sauceId },
+      {
+        $inc: { likes: +1 },
+        $pull: { usersDisliked: userId },
+        $addToSet: { usersLiked: userId }
       }
-    });
-
+    )
+      .then(() => res.status(200).json({ message: "Sauce appréciée" }))
+      .catch(error => {
+        console.error(error);
+        if (error instanceof MongooseError || error instanceof MongoError) {
+          console.log(error);
+        } else {
+          next(error);
+        }
+      });
   }
-  
-  /*dislike sauce*/
+
+  /* dislike sauce */
+
   if (like === -1) {
-  sauce.updateOne(
-    { _id: sauceId },
-    {
-      $inc: { dislikes: +1},
-      $addToSet: { usersDisliked: userId },
-      $pull: { usersLiked: userId },
-    }
-  )
-    .then((sauce) => res.status(200).json({ message: "Sauce dépréciée" }))
-    
-    .catch(error => {
-      console.error(error);
-      if (error instanceof MongooseError) {
-         console.log(error);
-      } else {
-        
-         console.log(error);
-
+    Sauce.updateOne(
+      { _id: sauceId },
+      {
+        $inc: { dislikes: +1 },
+        $addToSet: { usersDisliked: userId },
+        $pull: { usersLiked: userId },
       }
-    });
-
+    )
+      .then(() => res.status(200).json({ message: "Sauce dépréciée" }))
+      .catch(error => {
+        console.error(error);
+        if (error instanceof MongooseError || error instanceof MongoError) {
+          console.log(error);
+        } else {
+          next(error);
+        }
+      });
   }
-  
-  /*back like and dislikes*/
+
+  /* back like and dislikes */
+
   if (like == 0) {
-  const { MongoClient, ObjectId } = require('mongodb');
-  const url = 'mongodb://localhost:27017/';
-  const dbName = 'p6_oc';
- 
-  
-  const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
+    Sauce.findOne({ _id: sauceId })
+      .then(sauce => {
+        const userIndexLiked = sauce.usersLiked.indexOf(userId);
+        const userIndexDisliked = sauce.usersDisliked.indexOf(userId);
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
-  if (err) throw err;
-  
-  const collection = mongoose.connection.collection('sauces');
-  const query = { _id: new ObjectId(req.params.id) };
-  const update = { $pull: { usersLiked: req.body.userId, usersDisliked: req.body.userId } };
+        if (userIndexLiked !== -1) {
+          sauce.likes--;
+          sauce.usersLiked.splice(userIndexLiked, 1);
+        }
 
-  collection.findOne(query, function(err, result) {
-    if (err) throw err;
+        if (userIndexDisliked !== -1) {
+          sauce.dislikes--;
+          sauce.usersDisliked.splice(userIndexDisliked, 1);
+        }
 
-    // Condition pour vérifier si le nombre de likes est supérieur à zéro
-    if (result.likes > 0) {
-      update.$inc = { likes: -1 };
-    }
+        sauce.save()
+          .then(() => {
+            res.status(200).json({ message: "Like ou Dislike annulé" });
+          })
+          .catch(error => {
+            console.error(error);
+            if (error instanceof MongooseError || error instanceof MongoError) {
+              console.log(error);
+            } else {
+              next(error);
+            }
+          });
+      })
+      .catch(error => {
+        console.error(error);
+        if (error instanceof MongooseError || error instanceof MongoError) {
+          console.log(error);
+        } else {
+          next(error);
+        }
+      });
+  }
 
-    // Condition pour vérifier si le nombre de dislikes est supérieur à zéro
-    if (result.dislikes > 0) {
-      update.$inc = { dislikes: -1 };
-    }
-
-    collection.findOneAndUpdate(query, update, function(err, result) {
-      if (err) throw err;
-     
-      mongoose.connection.close();
-    });
-  });
-
-  res.end();
 });
 
- 
-
-
-  }
-  
-    console.log("end route soute")
-  
-  })
-  
-
-  module.exports = router;
+module.exports = router;
