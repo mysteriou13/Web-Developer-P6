@@ -2,9 +2,9 @@
 const express = require('express');
 const router = express.Router();
 
-
 const { verifyToken } = require('../verif_token.js');
 
+const { MongooseError } = require('mongoose');
 
 router.post('/api/sauces/:id/like', verifyToken,function (req, res, next) {
 
@@ -28,7 +28,18 @@ router.post('/api/sauces/:id/like', verifyToken,function (req, res, next) {
     }
   )
     .then((sauce) => res.status(200).json({ message: "Sauce appréciée" }))
-    .catch((error) => res.status(500).json({ error }));
+    
+    .catch(error => {
+      console.error(error);
+      if (error instanceof MongooseError) {
+         console.log(error);
+      } else {
+        
+         console.log(error);
+
+      }
+    });
+
   }
   
   /*dislike sauce*/
