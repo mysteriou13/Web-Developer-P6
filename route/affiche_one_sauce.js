@@ -13,6 +13,8 @@ function one_sauce(req, res, next) {
     .catch(error => {
       const formattedError = new mongoose.Error(error.message);
    
+      console.log(formattedError);
+
     });
 }
 
