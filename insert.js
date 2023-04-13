@@ -75,33 +75,28 @@ function signup(req, hash, res) {
     
     /* function login*/
     function login(email, pass, res) {
-      let MongoClient = require('mongodb').MongoClient;
-      let connectionUrl = "mongodb://localhost:27017/p6_oc";
+      const mongoose = require('mongoose');
       const bcrypt = require('bcrypt');
       var jwt = require('jsonwebtoken');
-      const { Error } = require('mongoose'); // import Error from mongoose
-      
-      let t = 0;
-      const saltRounds = 10;
-      
+  
       // creating the message object
       let user = { "email": email, "pass": pass, "resut": null, "stat": res.status(200) };
-      
+  
       /*connection a la base  donn*/
-      MongoClient.connect(connectionUrl, function (err, client, res) {
+      mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true }, function (err) {
           if (err) throw err;
-      
+  
           // if database and collection do not exist they are created */
-          var db = client.db('p6_oc')
-      
-          db.collection("User").findOne({ email: email }, function (err, obj, res) {
+          var db = mongoose.connection;
+  
+          db.collection("User").findOne({ email: email }, function (err, obj) {
               /*verif email existe*/
               if (!obj) {
                   const mongooseErr = new Error('error mail non trouver');
                   mongooseErr.name = 'MongooseError'; // set the error name
                   user.stat.status(401).json({ error: mongooseErr.message });
               }
-      
+  
               /*verif mot de pass user*/
               bcrypt.compare(pass, obj.password, function (err, result) {
                   if (result) {
@@ -123,6 +118,7 @@ function signup(req, hash, res) {
           });
       });
   }
+  
   
 
     module.exports = {

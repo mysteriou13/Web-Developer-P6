@@ -1,24 +1,35 @@
-
 const errorHandler = require('mongoose-error-handler').default;
+const mongoose = require('mongoose');
+const Sauce = require('./Sauce.js');
 
 module.exports = {
   affiche_sauce: function(res) {
-    const MongoClient = require('mongodb').MongoClient;
-    const url = 'mongodb://localhost:27017/p6_oc';
-
-    MongoClient.connect(url)
-      .then(db => {
-        const dbo = db.db('p6_oc');
-        dbo.collection('sauces').find({}).toArray()
+    mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true })
+      .then(() => {
+        Sauce.find({})
           .then(result => {
             res.status(200).json(result);
-            db.close();
           })
           .catch(error => {
-            res.status(error.status || 500).json({ error: error.message });
-            db.close();
+            console.error(error);
+            if (error instanceof mongoose.MongooseError) {
+            
+              console.log(error);
+            } else {
+              
+              console.log(error);
+            }
           });
       })
+      .catch(error => {
+        console.error(error);
+        if (error instanceof mongoose.MongooseError) {
+          
+          console.log(error);
+        } else {
       
+          console.log(error);
+        }
+      });
   }
 };
