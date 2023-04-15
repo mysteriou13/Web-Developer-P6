@@ -37,14 +37,8 @@ router.delete('/api/sauces/:id', verifyToken, (req, res) => {
           });
       });
     })
-    .catch(error => {
-      console.error(error);
-      if (error instanceof MongooseError) {
-        res.status(400).json({ error: 'Bad request' });
-      } else {
-        res.status(500).json({ error: 'Server error' });
-      }
-    });
+    
+    res.end();
 });
 
 module.exports = router;

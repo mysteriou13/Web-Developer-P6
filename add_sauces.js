@@ -2,10 +2,12 @@ module.exports = {
 
     add_sauces: function(req,res){
 
-        const MongoClient = require('mongodb').MongoClient;
+      const mongoose = require('mongoose');
         const connectionUrl = "mongodb://localhost:27017/p6_oc";
         const jwt = require('jsonwebtoken');
         const path = require('path');
+
+        const Sauce = require('./Sauce'); 
         
   
           const pic = req.files;
@@ -51,16 +53,19 @@ module.exports = {
             usersDisliked: [],
           }; 
         
-          MongoClient.connect(connectionUrl, function(err, client) {
-            const db = client.db('p6_oc');
-            
-            db.collection("sauces").insertOne(data, function(err, res) {
-              client.close();
-            });
-          });
-      
-        
-        
-    }
+          const sauce = new Sauce(data); // Créer un nouveau document avec les données
 
+          sauce.save() // Enregistrer le document dans la base de données
+      .then(() => {
+        console.log('Sauce added successfully');
+        mongoose.connection.close();
+      })
+      .catch((error) => {
+        console.error(error);
+        mongoose.connection.close();
+      
+
+    })
+
+  }
 }
