@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 app.post('/api/sauces', upload.any(), function (req, res, next) {
   console.log("add sauces");
   add_sauce.add_sauces(req, res);
-  res.redirect("./sauces");
+  res.redirect("/api/sauces");
 })
 
 /*route inscription*/
@@ -60,7 +60,7 @@ app.use('/api/auth/signup', route_singup)
 /*route connection*/
 app.use('/api/auth/login',route_login);
 
-/*affichage des sauces */
+/*ajout des sauces */
 
 app.get('/api/sauces', verifyToken, route_add_sauce);
 
