@@ -1,6 +1,6 @@
 
  const mongoose = require('mongoose');
- const { MongooseError }= require('mongoose');
+ const MongooseError = require('mongoose/lib/error');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -37,10 +37,10 @@ function signup(req, hash, res) {
     User.findOne({ email: req.body.email }, (err, existingUser) => {
       if (err) {
         console.log('Error while checking email uniqueness: ' + err.message);
-
+        res.status(500).json({ message: 'Une erreur est survenue lors de la vérification de l\'email.' });
       } else if (existingUser) {
         console.log('Email already exists');
-       
+        res.status(400).json({ message: 'Cet email est déjà utilisé. Veuillez en choisir un autre.' });
       } else {
         // Si l'e-mail est unique, créer un nouveau document User avec les données de la requête
         const newUser = new User({
@@ -49,19 +49,19 @@ function signup(req, hash, res) {
         });
         
         // Enregistrer le document dans la collection User
-        newUser.save((err) => {
+        newUser.save((err, savedUser) => {
           if (err) {
             // Si une erreur survient lors de l'enregistrement, vérifier s'il s'agit d'une erreur de validation unique
             if (err instanceof MongooseError.ValidationError && err.errors.email) {
               console.log('Email uniqueness validation failed: ' + err.errors.email.message);
-           
+              res.status(400).json({ message: err.errors.email.message });
             } else {
               console.log('Error while saving user: ' + err.message);
-     
+              res.status(500).json({ message: 'Une erreur est survenue lors de la création de votre compte.' });
             }
           } else {
             console.log('User saved successfully');
-            
+            res.status(201).json({ message: 'Votre compte a été créé avec succès.' });
           }
         });
       }
@@ -94,7 +94,7 @@ function signup(req, hash, res) {
               if (!obj) {
                   const mongooseErr = new Error('error mail non trouver');
                   mongooseErr.name = 'MongooseError'; // set the error name
-                  console.log(mongooseErr.message);
+                  user.stat.status(401).json({ error: mongooseErr.message });
               }
   
               /*verif mot de pass user*/
@@ -112,7 +112,7 @@ function signup(req, hash, res) {
                       const mongooseErr = new Error('error mot de passe');
                       console.log(mongooseErr.message);
                       mongooseErr.name = 'MongooseError'; // set the error name
-                     
+                      user.stat.status(401).json({ error: mongooseErr.message });
                   }
               });
           });
