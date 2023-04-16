@@ -2,38 +2,27 @@ const http = require('http');
 const express = require('express')
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const saltRounds = 10;
+
 const app = express()
 const port = 3000
-const jwt = require('jsonwebtoken');
+
 const add_sauce = require("./add_sauces.js");
 const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' })
-const session = require("express-session");
-const affiche = require("./affiche_sauce.js");
-const like = require("./like.js");
+
+
 const path = require("path");
 const route_singup = require("./route/singup.js");
 const route_login = require("./route/login.js");
-const one_sauce = require("./route/affiche_one_sauce.js");
-const  route_add_sauce = require('./route/route_add_sauce.js');
+const affiche_one_sauce = require("./route/affiche_one_sauce.js");
+const  route_add_sauce = require('./route/route_affiche_all_sauce.js');
 const delete_sauce = require("./route/delete_sauce.js");
 const update_sauce = require("./route/update_sauce.js");
 const like_sauce = require("./route/like_sauces.js");
 
 const { verifyToken } = require('./verif_token.js');
 
-const http_server = require("./http_server.js");
-
 const helmet = require('helmet');
-
-const errorHandler = require('mongoose-error-handler');
-
-const sauce = require("./Sauce.js");
-
-
-
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -65,7 +54,7 @@ app.use('/api/auth/login',route_login);
 app.get('/api/sauces', verifyToken, route_add_sauce);
 
 /*affichage d'une sauce*/
-app.get('/api/sauces/:id', verifyToken ,one_sauce)
+app.get('/api/sauces/:id', verifyToken ,affiche_one_sauce)
 
 /*delete sauces*/
 app.use(delete_sauce);
@@ -79,6 +68,6 @@ app.use(like_sauce);
 
 app.use(helmet());
 
-app.listen(3000, function() {
+app.listen(port, function() {
   console.log(`server listen at: http://localhost:3000/`);
 });

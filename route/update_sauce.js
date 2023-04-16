@@ -8,6 +8,8 @@ const upload = multer({ dest: './uploads' });
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectID;
 
+const { MongooseError } = require('mongoose');
+
 const fs = require('fs');
 const path = require("path");
 
@@ -44,7 +46,14 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
             const sauce = require("../Sauce.js");
             sauce.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
               .then(() => res.status(200).json({ message: 'Objet modifié!' }))
-              .catch(error => res.status(401).json({ error }));
+              
+              .catch(error => {
+                console.error(error);
+                if (error instanceof MongooseError) {
+                   console.log(error);
+                } 
+              });
+
             client.close();
           });
         });
@@ -54,7 +63,12 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
         const sauce = require("../Sauce.js");
         sauce.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
           .then(() => res.status(200).json({ message: 'Objet modifié!' }))
-          .catch(error => res.status(401).json({ error }));
+          .catch(error => {
+            console.error(error);
+            if (error instanceof MongooseError) {
+               console.log(error);
+            } 
+          });
         client.close();
       }
     });
