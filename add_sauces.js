@@ -1,6 +1,8 @@
 module.exports = {
 
-    add_sauces: function(req,res){
+
+/*ajoute des sauces*/
+    add_sauces: function(req,res,pic){
 
       const mongoose = require('mongoose');
         const connectionUrl = "mongodb://localhost:27017/p6_oc";
@@ -10,17 +12,15 @@ module.exports = {
         const Sauce = require('./Sauce'); 
         
   
-          const pic = req.files;
-          const namepic = pic[0].filename;
 
-          console.log(namepic);
+          const namepic = pic;
 
-    
+        
           const namefile = pic[0].filename;
         
           const tab = req.body.sauce;
           const tab1 = tab.split('{');
-          const tab2 = tab1[1];
+      
           const tab2a = tab1[1].split("}");
           const b = tab2a[0];
           const b1 = b.split(",");
