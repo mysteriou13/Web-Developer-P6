@@ -79,6 +79,15 @@ app.post('/api/sauces', upload.any(), function (req, res) {
   
   
   sharp(filePath)
+
+  .resize({
+    width: 200,
+    height: 200,
+    fit: 'inside',
+    withoutEnlargement: true
+  })
+
+  .webp()
     .toBuffer((err, buffer) => {
       if (err) throw err;
       // Write the converted file to disk
@@ -88,7 +97,7 @@ app.post('/api/sauces', upload.any(), function (req, res) {
         // Delete the original file
         fs.unlink(filePath, (err) => {
           if (err) throw err;
-          console.log('File deleted successfully!');
+          console.log('File deleted succ^essfully!');
         });
   
         console.log('File converted successfully!');
