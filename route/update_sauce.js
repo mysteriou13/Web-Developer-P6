@@ -13,6 +13,8 @@ const { MongooseError } = require('mongoose');
 const fs = require('fs');
 const path = require("path");
 
+const sharp = require("sharp");
+
 const url = 'mongodb://localhost:27017/';
 
 const nomDeLaCollection = 'sauces';
@@ -29,9 +31,13 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
       if (err) throw err;
 
       if (req.file) {
+      
+        var url = result.imageUrl;
+        var  url1 = url.split("/uploads/");
+        var  url2 = url1[1];
         // Si un fichier a été téléchargé, supprime l'ancien fichier et renomme le nouveau
-        const oldPath = './uploads/' + result.namefile;
-        const newPath = './uploads/' + req.file.filename + path.extname(req.file.originalname);
+        const oldPath = './uploads/' +url2;
+        const newPath = './uploads/' + req.file.filename + ".webp";
         fs.unlink(oldPath, (err) => {
         
           console.log('Le fichier a été supprimé avec succès');
@@ -41,7 +47,7 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
             // Met à jour la sauce avec les nouvelles données
             const thingObject = {
               ...JSON.parse(req.body.sauce),
-              imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename + path.extname(req.file.originalname)}`
+              imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename +".webp"}`
             };
             const sauce = require("../Sauce.js");
             sauce.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
@@ -53,6 +59,29 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
                    console.log(error);
                 } 
               });
+
+
+  
+/*conversion du fichier au webp*/
+sharp(oldPath)
+
+.resize({
+  width: 200,
+  height: 200,
+  fit: 'inside',
+  withoutEnlargement: true
+})
+
+
+  .webp()
+  .toFile(newPath)
+  .then(() => {
+    console.log('Conversion réussie !');
+  })
+  .catch((err) => {
+    console.log('Erreur lors de la conversion :', err);
+  });
+
 
             client.close();
           });
