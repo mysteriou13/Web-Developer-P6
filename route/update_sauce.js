@@ -32,9 +32,11 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
 
       if (req.file) {
       
+        /*recuperation du nom fichier*/
         var url = result.imageUrl;
         var  url1 = url.split("/uploads/");
         var  url2 = url1[1];
+
         // Si un fichier a été téléchargé, supprime l'ancien fichier et renomme le nouveau
         const oldPath = './uploads/' +url2;
         const newPath = './uploads/' + req.file.filename + ".webp";
