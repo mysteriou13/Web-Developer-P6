@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
-const Sauce = require('../Sauce.js');
+const Sauce = require('../models/Sauces.js');
 const { verifyToken } = require('../verif_token.js');
 const { MongooseError } = require('mongoose');
 
@@ -11,8 +11,8 @@ router.delete('/api/sauces/:id', verifyToken, (req, res) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
       const filename = sauce.imageUrl;
-      var file_sauce = filename.split("uploads");
-      const filePath = `./uploads/` + file_sauce[1];
+      var file_sauce = filename.split("image");
+      const filePath = `./image/` + file_sauce[1];
 
       console.log(file_sauce[1]);
 

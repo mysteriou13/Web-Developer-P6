@@ -8,12 +8,12 @@ const port = 3000
 const path = require("path");
 const route_singup = require("./route/singup.js");
 const route_login = require("./route/login.js");
-const affiche_one_sauce = require("./route/affiche_one_sauce.js");
-const  route_affiche_all_sauce = require('./route/route_affiche_all_sauce.js');
-const route_add_sauce = require("./route/route_add_sauce.js");
-const delete_sauce = require("./route/delete_sauce.js");
-const update_sauce = require("./route/update_sauce.js");
-const like_sauce = require("./route/like_sauces.js");
+const affiche_one_sauce = require("./controller/affiche_one_sauce.js");
+const  route_affiche_all_sauce = require('./controller/route_affiche_all_sauce.js');
+const route_add_sauce = require("./controller/route_add_sauce.js");
+const delete_sauce = require("./controller/delete_sauce.js");
+const update_sauce = require("./controller/update_sauce.js");
+const like_sauce = require("./controller/like_sauces.js");
 
 const { verifyToken } = require('./verif_token.js');
 
@@ -21,7 +21,7 @@ const helmet = require('helmet');
 
 app.use(express.json());
 app.use(bodyParser.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/image", express.static(path.join(__dirname, "/image/")));
 
 
 

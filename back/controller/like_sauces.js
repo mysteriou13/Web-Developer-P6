@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { verifyToken } = require('../verif_token.js');
 
-const Sauce = require("../Sauce.js");
+const Sauce = require("../models/Sauces.js");
 
 router.post('/api/sauces/:id/like', verifyToken, function (req, res, next) {
   

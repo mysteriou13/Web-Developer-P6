@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('multer')({ dest: 'uploads/' });
+const upload = require('multer')({ dest: 'image/' });
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
-const add_sauce = require('../add_sauces');
+const add_sauce = require('../controller/add_sauces');
 
 router.post('/', upload.any(), function (req, res) {
   const files = req.files;
@@ -15,7 +15,7 @@ router.post('/', upload.any(), function (req, res) {
   });
 
   /*convertion au forma webp*/
-  const filePath = 'uploads/' + filename;
+  const filePath = 'image/' + filename;
   const newExtension = '.webp';
   const fileExtension = path.extname(filePath);
   const fileBaseName = path.basename(filePath, fileExtension);

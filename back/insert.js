@@ -5,17 +5,8 @@ const uniqueValidator = require('mongoose-unique-validator');
 // Connexion à la base de données
 mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true });
 
-// Définition du schéma User
-const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true }
-});
-
-userSchema.plugin(uniqueValidator);
-
-// Vérification si le modèle User existe déjà
-const User = mongoose.models.User || mongoose.model('User', userSchema);
-
+// Import the User model
+const User = require("./models/usershema.js");
 
 function signup(req, hash, res) {
   // Création d'un nouvel utilisateur à insérer dans la base de données
@@ -33,9 +24,6 @@ function signup(req, hash, res) {
   });
 
 }
-
-
-
 
     /*login user*/
 

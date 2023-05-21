@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Sauce = require('../Sauce.js');
+const Sauce = require('../models/Sauces.js');
 
 function one_sauce(req, res, next) {
   mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true })
