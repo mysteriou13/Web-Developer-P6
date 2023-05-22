@@ -9,7 +9,7 @@ module.exports = {
         const jwt = require('jsonwebtoken');
         const path = require('path');
 
-        const Sauce = require('./controller/Sauce.js'); 
+        const Sauce = require('../models/Sauces.js'); 
         
   
 

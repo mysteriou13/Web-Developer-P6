@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const multer = require('multer');
-const upload = multer({ dest: './uploads' });
+const upload = multer({ dest: './images' });
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectID;
@@ -13,15 +13,17 @@ const { MongooseError } = require('mongoose');
 const fs = require('fs');
 const path = require("path");
 
+const sauce = require("../models/Sauces.js");
+
 const sharp = require("sharp");
 
 const url = 'mongodb://localhost:27017/';
 
 const nomDeLaCollection = 'sauces';
 
-const { verifyToken } = require('../verif_token.js');
+const { verifyToken } = require('../middleware/verif_token.js');
 
-router.use("/uploads", express.static(path.join(__dirname, "uploads")));
+router.use("/uploads", express.static(path.join(__dirname, "image")));
 
 router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req, res, next) {
 
@@ -51,7 +53,7 @@ router.put('/api/sauces/:id', verifyToken, upload.single('image'), function (req
               ...JSON.parse(req.body.sauce),
               imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename +".webp"}`
             };
-            const sauce = require("../Sauce.js");
+            
             sauce.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
               .then(() => res.status(200).json({ message: 'Objet modifié!' }))
               

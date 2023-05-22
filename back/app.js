@@ -15,8 +15,6 @@ const delete_sauce = require("./controller/delete_sauce.js");
 const update_sauce = require("./controller/update_sauce.js");
 const like_sauce = require("./controller/like_sauces.js");
 
-const { verifyToken } = require('./verif_token.js');
-
 const helmet = require('helmet');
 
 app.use(express.json());
@@ -33,30 +31,10 @@ app.use((req, res, next) => {
 });
 /*ajout des sauce*/
 
-app.use('/api/sauces', route_add_sauce);
+const routes = require("./route/route_sauce.js");
 
-/*route inscription*/
-app.use('/api/auth/signup', route_singup)
 
-/*route connection*/
-app.use('/api/auth/login',route_login);
-
-/*affichiage all  sauces */
-
-app.get('/api/sauces', verifyToken, route_affiche_all_sauce);
-
-/*affichage d'une sauce*/
-app.get('/api/sauces/:id', verifyToken ,affiche_one_sauce)
-
-/*delete sauces*/
-app.use(delete_sauce);
-
-/*update sauce*/
-app.use(update_sauce);
-
-/*like  sauce*/
-app.use(like_sauce);
-
+app.use(routes);
 
 app.use(helmet());
 

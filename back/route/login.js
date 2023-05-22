@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-var  insert = require("../insert.js");
+var  insert = require("../middleware/insert.js");
 
 
 router.post('/', function (req, res) {

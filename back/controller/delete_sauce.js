@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const Sauce = require('../models/Sauces.js');
-const { verifyToken } = require('../verif_token.js');
+const { verifyToken } = require('../middleware/verif_token.js');
 const { MongooseError } = require('mongoose');
 
 router.delete('/api/sauces/:id', verifyToken, (req, res) => {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { verifyToken } = require('../verif_token.js');
+const { verifyToken } = require('../middleware/verif_token.js');
 
 const Sauce = require("../models/Sauces.js");
 

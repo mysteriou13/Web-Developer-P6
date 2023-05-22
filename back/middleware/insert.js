@@ -6,7 +6,7 @@ const uniqueValidator = require('mongoose-unique-validator');
 mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true });
 
 // Import the User model
-const User = require("./models/usershema.js");
+const User = require("../models/usershema.js");
 
 function signup(req, hash, res) {
   // Création d'un nouvel utilisateur à insérer dans la base de données

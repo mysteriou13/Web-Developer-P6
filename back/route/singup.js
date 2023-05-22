@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-var tools = require("../insert.js");
+var tools = require("../middleware/insert.js");
 const saltRounds = 10;
 
 router.post('/', function (req, res) {
