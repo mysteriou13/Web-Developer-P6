@@ -1,14 +1,19 @@
 const mongoose = require('mongoose');
 
+require('dotenv').config()
+
 const uniqueValidator = require('mongoose-unique-validator');
 
 // Connexion à la base de données
-mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost:27017/p6_oc", { useNewUrlParser: true });
 
 // Import the User model
 const User = require("../models/usershema.js");
 
 function signup(req, hash, res) {
+  
+  console.log('function singup');
+
   // Création d'un nouvel utilisateur à insérer dans la base de données
   const newUser = new User({
     email: req.body.email,
@@ -28,8 +33,6 @@ function signup(req, hash, res) {
     /*login user*/
 
    
-
-
     function login (email, pass, res) {
       const mongoose = require('mongoose');
       const bcrypt = require('bcrypt');
@@ -39,7 +42,7 @@ function signup(req, hash, res) {
       let user = { "email": email, "pass": pass, "resut": null, "stat": res.status(200) };
     
       /*connection a la base  donn*/
-      mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true });
+      mongoose.connect(process.env.APP_CONNECT_MONGOD, { useNewUrlParser: true, useUnifiedTopology: true });
     
       // Gestionnaire d'erreur global pour la connexion MongoDB
       mongoose.connection.on('error', function (err) {

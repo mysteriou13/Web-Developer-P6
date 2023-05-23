@@ -2,24 +2,32 @@ const http = require('http');
 const express = require('express')
 const bodyParser = require("body-parser");
 const app = express()
-const port = 3000
+const port = 3000;
+
 
 
 const path = require("path");
 const route_singup = require("./route/singup.js");
 const route_login = require("./route/login.js");
-const affiche_one_sauce = require("./controller/affiche_one_sauce.js");
-const  route_affiche_all_sauce = require('./controller/route_affiche_all_sauce.js');
+
 const route_add_sauce = require("./controller/route_add_sauce.js");
 const delete_sauce = require("./controller/delete_sauce.js");
 const update_sauce = require("./controller/update_sauce.js");
 const like_sauce = require("./controller/like_sauces.js");
 
+
+const affiche_one_sauce = require("./controller/affiche_one_sauce.js");
+const route_affiche_all_sauce = require('./controller/route_affiche_all_sauce.js');
+
+
+
+
+
 const helmet = require('helmet');
 
 app.use(express.json());
 app.use(bodyParser.json());
-app.use("/image", express.static(path.join(__dirname, "/image/")));
+app.use("/images", express.static(path.join(__dirname, "/images/")));
 
 
 
@@ -31,10 +39,37 @@ app.use((req, res, next) => {
 });
 /*ajout des sauce*/
 
-const routes = require("./route/route_sauce.js");
 
 
-app.use(routes);
+
+
+const { verifyToken } = require('./middleware/verif_token.js');
+
+app.use('/api/sauces', route_add_sauce);
+
+/*route inscription*/
+app.use('/api/auth/signup', route_singup);
+
+
+
+/*route connection*/
+app.use('/api/auth/login', route_login);
+
+/*affichage all sauces */
+app.get('/api/sauces', verifyToken, route_affiche_all_sauce);
+
+/*affichage d'une sauce*/
+app.get('/api/sauces/:id', verifyToken, affiche_one_sauce);
+
+/*delete sauces*/
+app.use(delete_sauce);
+
+/*update sauce*/
+app.use(update_sauce);
+
+/*like sauce*/
+app.use(like_sauce);
+
 
 app.use(helmet());
 

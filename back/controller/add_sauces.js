@@ -36,7 +36,7 @@ module.exports = {
           const decodedToken = jwt.verify(token, 'shhhhh');
           const userId = decodedToken.userId;
         
-          const imageUrl = `${req.protocol}://${req.get('host')}/image/${namepic}`;
+          const imageUrl = `${req.protocol}://${req.get('host')}/images/${namepic}`;
           const data = {
             userId: a2[5],
             id_sauce: namefile,
