@@ -1,4 +1,3 @@
-"use strict";
 
 var affiche = require('../controller/affiche_sauce.js'); // si vous utilisez également une fonction dans un autre fichier
 

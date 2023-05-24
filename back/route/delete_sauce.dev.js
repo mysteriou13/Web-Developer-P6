@@ -8,11 +8,20 @@ var fs = require('fs');
 
 var Sauce = require('../Sauce.js');
 
+const mongoose = require('mongoose');
+
 var _require = require('../verif_token.js'),
     verifyToken = _require.verifyToken;
 
 var _require2 = require('mongoose'),
     MongooseError = _require2.MongooseError;
+
+
+    mongoose.connect(process.env.APP_CONNECT_MONGOD, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    })
+
 
 router["delete"]('/api/sauces/:id', verifyToken, function (req, res) {
   console.log('delete sauces');

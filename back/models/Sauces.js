@@ -1,8 +1,4 @@
 var mongoose = require('mongoose');
-mongoose.set('strictQuery', true);
-
-var Schema = mongoose.Schema;
-
 
 // schéma of a sauce
 const sauceSchema = mongoose.Schema({

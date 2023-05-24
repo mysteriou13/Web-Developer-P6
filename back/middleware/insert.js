@@ -5,7 +5,20 @@ require('dotenv').config()
 const uniqueValidator = require('mongoose-unique-validator');
 
 // Connexion à la base de données
-mongoose.connect("mongodb://localhost:27017/p6_oc", { useNewUrlParser: true });
+
+mongoose.connect(process.env.APP_CONNECT_MONGOD, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => {
+    console.log('Connexion à la base de données réussie !');
+    // Vous pouvez commencer à effectuer des opérations sur la base de données ici
+  })
+  .catch((error) => {
+    console.error('Erreur de connexion à la base de données :', error);
+    // Gérez l'erreur de connexion ici
+  });
+
 
 // Import the User model
 const User = require("../models/usershema.js");
@@ -37,6 +50,9 @@ function signup(req, hash, res) {
       const mongoose = require('mongoose');
       const bcrypt = require('bcrypt');
       var jwt = require('jsonwebtoken');
+      
+      const users = require("../models/Sauces");
+
     
       // creating the message object
       let user = { "email": email, "pass": pass, "resut": null, "stat": res.status(200) };
@@ -56,7 +72,7 @@ function signup(req, hash, res) {
       // if database and collection do not exist they are created */
       var db = mongoose.connection;
     
-      db.collection('users').findOne({ email: email }, function (err, obj) {
+      users.findOne({ email: email }, function (err, obj) {
         if (err) {
           console.log('Database query error:', err);
           user.stat.status(500).json({

@@ -7,7 +7,7 @@ const { MongooseError } = require('mongoose');
 /*affiche toutes les sauces sauce*/
 module.exports = {
   affiche_sauce: function(res) {
-    mongoose.connect('mongodb://localhost:27017/p6_oc', { useNewUrlParser: true, useUnifiedTopology: true })
+    mongoose.connect(process.env.APP_CONNECT_MONGOD, { useNewUrlParser: true, useUnifiedTopology: true })
       .then(() => {
         Sauce.find({})
           .then(result => {

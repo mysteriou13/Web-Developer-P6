@@ -11,6 +11,20 @@ router.post('/api/sauces/:id/like', verifyToken, function (req, res, next) {
   const userId = req.body.userId;
   const like = req.body.like;
 
+  mongoose.connect(process.env.APP_CONNECT_MONGOD, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+    .then(() => {
+      console.log('Connexion à la base de données réussie !');
+      // Vous pouvez commencer à effectuer des opérations sur la base de données ici
+    })
+    .catch((error) => {
+      console.error('Erreur de connexion à la base de données :', error);
+      // Gérez l'erreur de connexion ici
+    });
+  
+
   /* like sauce */
 
   if (like === 1) {

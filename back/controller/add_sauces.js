@@ -5,7 +5,7 @@ module.exports = {
     add_sauces: function(req,res,pic){
 
       const mongoose = require('mongoose');
-        const connectionUrl = "mongodb://localhost:27017/p6_oc";
+        const connectionUrl = process.env.APP_CONNECT_MONGOD;
         const jwt = require('jsonwebtoken');
         const path = require('path');
 
