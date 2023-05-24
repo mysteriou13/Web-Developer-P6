@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require("mongoose");
 const router = express.Router();
 const fs = require('fs');
 const Sauce = require('../models/Sauces.js');
@@ -25,17 +26,31 @@ router.delete('/api/sauces/:id', verifyToken, (req, res) => {
 
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
-      const filename = sauce.imageUrl;
-      var file_sauce = filename.split("image");
-      const filePath = `./image/` + file_sauce[1];
 
-      console.log(file_sauce[1]);
+      const img = sauce.imageUrl;  
 
-      fs.unlink(filePath, err => {
+      var img_url = img.split("/images/");
+
+      var  name_img = img_url[1];
+
+      var dir = __dirname;
+
+      dir = dir.replace("controller","images/");
+
+      var dir_image = dir+name_img;
+      
+      
+      console.log("image sauce",dir_image);
+
+      
+      fs.unlink(dir_image, err => {
         if (err) {
           console.error(err);
-          return res.status(500).json({ error: 'Server error' });
+       
         }
+
+      });
+      
 
         Sauce.deleteOne({ _id: req.params.id })
           .then(() => {
@@ -50,10 +65,12 @@ router.delete('/api/sauces/:id', verifyToken, (req, res) => {
                console.log(error);
             } 
           });
-      });
+      
     })
     
     res.end();
+
+
 });
 
 module.exports = router;

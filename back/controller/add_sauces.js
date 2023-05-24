@@ -33,7 +33,7 @@ module.exports = {
           }
            
           const token = req.headers.authorization.split(' ')[1];
-          const decodedToken = jwt.verify(token, 'shhhhh');
+          const decodedToken = jwt.verify(token, process.env.KEY);
           const userId = decodedToken.userId;
         
           const imageUrl = `${req.protocol}://${req.get('host')}/images/${namepic}`;
