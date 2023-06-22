@@ -24,48 +24,45 @@ function signup(req, hash, res) {
   const User = mongoose.model('User', userSchema);
 
   // Check if the user already exists in the database
-  User.findOne({ email: req.body.email }, function (err, user) {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-
-    if (user) {
-      // User already exists
-      console.log('User already exists');
-      res.status(409).send('User already exists');
-
-      res.json({Error :"error user exists"});
-      return;
-    }
-
-    // Create a new user in the database
-    const newUser = new User({ email: req.body.email, password: hash });
-    newUser.save(function (err, result) {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
+  User.findOne({ email: req.body.email })
+    .then((user) => {
+      if (user) {
+        // User already exists
+        console.log('User already exists');
+        res.status(409).send('User already exists');
         return;
       }
 
-      // Retrieve the inserted user's ID
-      var userId = result._id;
+      // Create a new user in the database
+      const newUser = new User({ email: req.body.email, password: hash });
+      newUser.save()
+        .then((result) => {
+          // Retrieve the inserted user's ID
+          var userId = result._id;
 
-      // Generate a JSON Web Token (JWT) with user ID
-      var token = jwt.sign({ token: userId }, process.env.KEY);
+          // Generate a JSON Web Token (JWT) with user ID
+          var token = jwt.sign({ token: userId }, process.env.KEY);
 
-      // Return the user ID and token in the response
-      res.status(200).json({
-        userId: userId,
-        token: token,
-      });
+          // Return the user ID and token in the response
+          res.status(200).json({
+            userId: userId,
+            token: token,
+          });
 
-      // End the response
-      res.end();
+          // End the response
+          res.end();
+        })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).send('Internal Server Error');
+        });
+    })
+    .catch((err) => {
+      console.error(err);
+      return;
     });
-  });
 }
+
 
 
     /*login user*/

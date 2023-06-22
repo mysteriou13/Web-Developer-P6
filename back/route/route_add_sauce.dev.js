@@ -13,7 +13,8 @@ var fs = require('fs');
 
 var path = require('path');
 
-var add_sauce = require('../add_sauces');
+const controler_sauce = require('../controller/controler_sauce');
+const { nextTick } = require('process');
 
 router.post('/', upload.any(), function (req, res) {
   var files = req.files;
@@ -46,8 +47,8 @@ router.post('/', upload.any(), function (req, res) {
       });
       console.log('File converted successfully!'); // Call add_sauce.add_sauces after the file is converted
 
-      add_sauce.add_sauces(req, res, newname);
-      res.redirect('/api/sauces');
+      controler_sauce.add_sauces(req, res, newname);
+      next();
     });
   });
 });

@@ -4,7 +4,8 @@ const upload = require('multer')({ dest: 'images/' });
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
-const add_sauce = require('../controller/add_sauces');
+const controller = require('../controller/controler_sauce');
+const mongoose = require('mongoose');
 
 router.post('/', upload.any(), function (req, res) {
   const files = req.files;
@@ -14,7 +15,7 @@ router.post('/', upload.any(), function (req, res) {
     filename = file.filename;
   });
 
-  /*convertion au forma webp*/
+  /*convertion au format webp*/
   const filePath = 'images/' + filename;
   const newExtension = '.webp';
   const fileExtension = path.extname(filePath);
@@ -47,9 +48,21 @@ router.post('/', upload.any(), function (req, res) {
         });
 
         console.log('File converted successfully!');
-        // Call add_sauce.add_sauces after the file is converted
-        add_sauce.add_sauces(req, res, newname);
-        res.redirect('/api/sauces');
+
+        // Establish a connection to MongoDB
+        mongoose.connect(process.env.APP_CONNECT_MONGOD, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true
+        })
+          .then(() => {
+            // Call add_sauce.add_sauces after the file is converted
+            controller.add_sauces(req, res, newname);
+            res.redirect('/api/sauces');
+          })
+          .catch((error) => {
+            console.error('Failed to connect to MongoDB:', error);
+            res.status(500).json({ error: 'Failed to connect to MongoDB' });
+          });
       });
     });
 });

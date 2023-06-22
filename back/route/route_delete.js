@@ -35,10 +35,10 @@ router.delete('/api/sauces/:id', verifyToken, (req, res) => {
 
       var dir = __dirname;
 
-      dir = dir.replace("controller","images/");
+      dir_image = dir.replace("route","/images/");
 
-      var dir_image = dir+name_img;
-      
+      dir_image = dir_image+name_img;
+    
       
       console.log("image sauce",dir_image);
 
