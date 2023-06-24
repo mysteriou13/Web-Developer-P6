@@ -1,28 +1,16 @@
-/*foncion inscription*/
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const User = require('../models/usershema');
+
+mongoose.connect(process.env.APP_CONNECT_MONGOD, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 function signup(req, hash, res) {
-  var jwt = require('jsonwebtoken');
   console.log("signup function");
-
-  var uniqueValidator = require('mongoose-unique-validator');
-
-  const mongoose = require('mongoose');
-
-  mongoose.connect(process.env.APP_CONNECT_MONGOD, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  var db = mongoose.connection;
-
-  const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-  });
-
-  // Apply the unique validator plugin to the email field
-  userSchema.plugin(uniqueValidator);
-
-  const User = mongoose.model('User', userSchema);
 
   // Check if the user already exists in the database
   User.findOne({ email: req.body.email })
@@ -39,10 +27,10 @@ function signup(req, hash, res) {
       newUser.save()
         .then((result) => {
           // Retrieve the inserted user's ID
-          var userId = result._id;
+          const userId = result._id;
 
           // Generate a JSON Web Token (JWT) with user ID
-          var token = jwt.sign({ token: userId }, process.env.KEY);
+          const token = jwt.sign({ token: userId }, process.env.KEY);
 
           // Return the user ID and token in the response
           res.status(200).json({
@@ -65,68 +53,58 @@ function signup(req, hash, res) {
 }
 
     /*login user*/
-
-    function login (email, pass, res) {
-      const mongoose = require('mongoose');
-      const bcrypt = require('bcrypt');
-      var jwt = require('jsonwebtoken');
-
-      // creating the message object
-      let user = { "email": email, "pass": pass, "resut": null, "stat": res.status(200) };
-
-      /*connection a la base  donn*/
+    
+    function login(email, pass, res) {
       mongoose.connect(process.env.APP_CONNECT_MONGOD, {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-
-        // if database and collection do not exist they are created */
-        var db = mongoose.connection;
-
-        db.collection(process.env.USERS).findOne({ email: email }, function (err, obj) {
-          if (err) {
-            console.log('Database query error:', err);
-            user.stat.status(500).json({
-              message: 'Database query error',
-              error: err
-            });
-            return;
-          }
-
-          /*verif email existe*/
-          if (!obj) {
-            user.stat.status(401).json({
-              message: 'Invalid email or password'
-            });
-            return;
-          }
-
-          /*verif mot de pass user*/
-          bcrypt.compare(pass, obj.password, function (err, result) {
-            if (err) {
-              console.log('Password comparison error:', err);
-              user.stat.status(500).json({
-                message: 'Password comparison error',
-                error: err
-              });
-              return;
-            }
-
-            if (result) {
-              var token = jwt.sign({ token: obj._id }, process.env.KEY);
-              userId = obj._id;
-              user.stat.status(200).json({
-                userId: obj._id,
-                token: token,
-              });
-            } else {
-              user.stat.status(401).json({
+        useUnifiedTopology: true
+      })
+      .then(() => {
+        User.findOne({ email })
+          .then(user => {
+            if (!user) {
+              return res.status(401).json({
                 message: 'Invalid email or password'
               });
             }
+        
+            bcrypt.compare(pass, user.password, (err, result) => {
+              if (err) {
+                console.log('Password comparison error:', err);
+                return res.status(500).json({
+                  message: 'Password comparison error',
+                  error: err
+                });
+              }
+        
+              if (result) {
+                const token = jwt.sign({ token: user._id }, process.env.KEY);
+                return res.status(200).json({
+                  userId: user._id,
+                  token: token
+                });
+              } else {
+                return res.status(401).json({
+                  message: 'Invalid email or password'
+                });
+              }
+            });
+          })
+          .catch(err => {
+            console.log('Database query error:', err);
+            return res.status(500).json({
+              message: 'Database query error',
+              error: err
+            });
           });
+      })
+      .catch(err => {
+        console.log('Database connection error:', err);
+        return res.status(500).json({
+          message: 'Database connection error',
+          error: err
         });
-      
+      });
     }
     
 
