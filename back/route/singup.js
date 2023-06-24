@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-var tools = require("../middleware/insert.js");
+var middleware = require("../middleware/middleware_sauce");
 const saltRounds = 10;
 
 
@@ -12,7 +12,7 @@ router.post('/', function (req, res) {
 
   bcrypt.genSalt(saltRounds, function(err, salt) {
     bcrypt.hash(req.body.password, salt, function(err, hash) {
-      tools.signup(req, hash, res);
+      middleware.signup(req, hash, res);
     });
   });
 

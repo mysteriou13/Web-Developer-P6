@@ -64,8 +64,6 @@ function signup(req, hash, res) {
     });
 }
 
-
-
     /*login user*/
 
     function login (email, pass, res) {
@@ -150,9 +148,80 @@ function signup(req, hash, res) {
     }
 
 
+/*multer image*/
+    function uploadImage(req, res, next) {
+
+      const multer = require('multer');
+    const sharp = require('sharp');
+    const fs = require('fs');
+    
+    const MIME_TYPES = {
+      'image/jpg': 'jpg',
+      'image/jpeg': 'jpg',
+      'image/png': 'png'
+    };
+    
+    
+      const storage = multer.diskStorage({
+        destination: (req, file, callback) => {
+          callback(null, 'images');
+        },
+        filename: (req, file, callback) => {
+          const name = file.originalname.split(' ').join('_');
+          const extension = MIME_TYPES[file.mimetype];
+          callback(null, name + '_' + Date.now() + '.' + extension);
+        }
+      });
+    
+      const upload = multer({ storage: storage }).single('image');
+    
+      upload(req, res, (error) => {
+        if (error) {
+          return res.status(400).json({ error: 'File upload failed' });
+        }
+    
+        if (!req.file) {
+          return res.status(400).json({ error: 'No file provided' });
+        }
+    
+        const imagePath = req.file.path;
+        const webpImagePath = imagePath.split('.').slice(0, -1).join('.') + '.webp';
+    
+        sharp(imagePath).resize({
+          width: 200,
+          height: 200,
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+          .toFormat('webp')
+          .toFile(webpImagePath)
+          .then(() => {
+            fs.unlink(imagePath, (error) => {
+              if (error) {
+                console.error('Error deleting original image:', error);
+              }
+
+            });
+    
+            req.file.filename = req.file.filename.split('.').slice(0, -1).join('.') + '.webp';
+            next();
+          })
+          .catch((error) => {
+            console.error('Error converting image to WebP:', error);
+            res.status(500).json({ error: 'Image conversion failed' });
+          });
+      });
+    }
+
+
+    
+
     module.exports = {
+
         signup: signup,
         login: login,
-        verifyToken: verifyToken
+        verifyToken: verifyToken,
+        uploadImage:uploadImage
+
       };
  

@@ -1,18 +1,16 @@
 // routes.js
 const express = require('express');
 const router = express.Router();
-const multer = require('../middleware/multer');
 const mongoose = require('mongoose');
 const sauce = require("../models/Sauces");
 const middelware = require('../middleware/middleware_sauce');
 const controller = require("../controller/controler_sauce");
-const sharp = require('sharp');
 const fs = require('fs');
 const path = require("path");
 
 router.use("/images", express.static(path.join(__dirname, "images")));
 
-router.put('/api/sauces/:id', middelware.verifyToken, multer, function (req, res, next) {
+router.put('/api/sauces/:id', middelware.verifyToken, middelware.uploadImage, function (req, res, next) {
   let name_img1;
 
   sauce.findOne({ _id: req.params.id })
