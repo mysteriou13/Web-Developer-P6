@@ -53,11 +53,9 @@ function add_sauces(req, res, pic) {
       console.error(error);
       mongoose.connection.close();
     });
-
-
 }
 
-/*affiche une sauce*/
+/* Affiche une sauce */
 function one_sauce(req, res, next) {
   const mongoose = require('mongoose');
   const Sauce = require('../models/Sauces.js');
@@ -66,7 +64,7 @@ function one_sauce(req, res, next) {
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-  console.log("get sauces");
+  console.log("get sauce");
 
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => res.status(200).json(sauce))
@@ -77,29 +75,29 @@ function one_sauce(req, res, next) {
     });
 }
 
-/*affiche toutes les sauces*/
+/* Affiche toutes les sauces */
 function all_sauce(req, res) {
   const errorHandler = require('mongoose-error-handler').default;
   const mongoose = require('mongoose');
   const Sauce = require('../models/Sauces.js');
-  const { MongooseError } = require('mongoose');
 
   mongoose.connect(process.env.APP_CONNECT_MONGOD, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
+      console.log('Connexion à MongoDB réussie !');
       Sauce.find({})
         .then(result => {
           res.status(200).json(result);
         })
         .catch(error => {
           console.error(error);
-          if (error instanceof MongooseError) {
+          if (error instanceof mongoose.Error) {
             console.log(error);
           }
         });
     })
     .catch(error => {
       console.error(error);
-      if (error instanceof MongooseError) {
+      if (error instanceof mongoose.Error) {
         console.log(error);
       }
     });

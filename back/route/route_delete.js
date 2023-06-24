@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const fs = require('fs');
 const Sauce = require('../models/Sauces.js');
-const { verifyToken } = require('../middleware/verif_token.js');
+const middleware = require('../middleware/middleware_sauce');
 const { MongooseError } = require('mongoose');
 
-router.delete('/api/sauces/:id', verifyToken, (req, res) => {
+router.delete('/api/sauces/:id', middleware.verifyToken, (req, res) => {
   console.log('delete sauces');
 
 

@@ -18,7 +18,7 @@ const like_sauce = require("./route/route_like_sauces.js");
 
 const controller = require("./controller/controler_sauce");
 
-const { verifyToken } = require('./middleware/verif_token.js');
+const middleware = require('./middleware/middleware_sauce');
 
 
 
@@ -47,10 +47,10 @@ app.use('/api/auth/signup', route_singup);
 app.use('/api/auth/login', route_login);
 
 /*affichage all sauces */
-app.get('/api/sauces', verifyToken, controller.all_sauce);
+app.get('/api/sauces', middleware.verifyToken, controller.all_sauce);
 
 /*affichage d'une sauce*/
-app.get('/api/sauces/:id', verifyToken, controller.one_sauce);
+app.get('/api/sauces/:id', middleware.verifyToken, controller.one_sauce);
 
 /*delete sauces*/
 app.use(delete_sauce);

@@ -2,11 +2,11 @@ const express = require('express');
 const mongoose = require("mongoose");
 const router = express.Router();
 
-const { verifyToken } = require('../middleware/verif_token.js');
+const middelware = require('../middleware/middleware_sauce');
 
 const Sauce = require("../models/Sauces.js");
 
-router.post('/api/sauces/:id/like', verifyToken, function (req, res, next) {
+router.post('/api/sauces/:id/like', middelware.verifyToken, function (req, res, next) {
   
   const sauceId = req.params.id;
   const userId = req.body.userId;

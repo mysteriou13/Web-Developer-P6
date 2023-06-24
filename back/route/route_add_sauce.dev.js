@@ -48,7 +48,7 @@ router.post('/', upload.any(), function (req, res) {
       console.log('File converted successfully!'); // Call add_sauce.add_sauces after the file is converted
 
       controler_sauce.add_sauces(req, res, newname);
-      next();
+    
     });
   });
 });

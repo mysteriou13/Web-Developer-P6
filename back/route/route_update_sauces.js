@@ -3,64 +3,55 @@ const express = require('express');
 const router = express.Router();
 const multer = require('../middleware/multer');
 const mongoose = require('mongoose');
-const sauce = require ("../models/Sauces");
-const { verifyToken } = require('../middleware/verif_token.js');
+const sauce = require("../models/Sauces");
+const middelware = require('../middleware/middleware_sauce');
+const controller = require("../controller/controler_sauce");
+const sharp = require('sharp');
 const fs = require('fs');
 const path = require("path");
 
 router.use("/images", express.static(path.join(__dirname, "images")));
 
-router.put('/api/sauces/:id', verifyToken, multer, function (req, res, next) {
+router.put('/api/sauces/:id', middelware.verifyToken, multer, function (req, res, next) {
+  let name_img1;
+
+  sauce.findOne({ _id: req.params.id })
+    .then((data) => {
+      var url = data.imageUrl;
+      const img = data.imageUrl;
+      var img_url = img.split("/images/");
+      var name_img = img_url[1];
+      name_img1 = name_img.split(".")[0];
+      var dir = __dirname;
+      dir_image = dir.replace("route", "/images/");
+      dir_image = dir_image + name_img;
+
+      var img_dir = img_url[0]+"/image";
+
+      fs.unlink(dir_image, err => {
+        if (err) {
+          console.error(err);
+        }
+      });
+ 
+      const sauceObjet = req.file
+      ? {
+          ...JSON.parse(req.body.sauce),
+          imageUrl: `${req.protocol}://${req.get("host")}/images/${
+            req.file.filename
+          }`,
+        }
+      : { ...req.body };
+    //method updateOne() 1er argument = object  modify/verifSiId=idOk
+    sauce.updateOne({ _id: req.params.id }, { ...sauceObjet, _id: req.params.id })
+      .then(() => res.status(200).json({ message: "Modified sauce !" }))
+      .catch((error) => res.status(400).json({ error }));
 
 
-  sauce.findOne({_id: req.params.id})
-  .then((data) => {
-
-    var url = data.imageUrl;
-
-    var url1 = url.split("/images/");
-
-    var path_file = __dirname+"/images/"+url1[1];
-
-    var path_file = path_file.replace('/controller', '');
-
-    console.log("path file",path_file);
-
-    fs.unlink(path_file, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
 
     })
-
-
-
-    console.log("url sauce",url);
-
-  })
-  .catch((error) => {
-    console.error('Error finding user', error);
-  });
-
-
-
-  const sauceObjet = req.file ? {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
-      }
-    : { ...req.body };
-  //method updateOne() 1er argument = object  modify/verifSiId=idOk
-  sauce.updateOne({ _id: req.params.id }, { ...sauceObjet, _id: req.params.id })
-    .then(() => res.status(200).json({ message: "Modified sauce !" }))
-    .catch((error) => res.status(400).json({ error }));
-
-
-
+   
+    
 });
-
-
 
 module.exports = router;
