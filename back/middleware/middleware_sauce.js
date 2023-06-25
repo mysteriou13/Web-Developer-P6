@@ -173,6 +173,7 @@ function uploadImage(req, res, next) {
         .toFormat('webp')
         .toFile(webpImagePath)
         .then(() => {
+          
           fs.unlink(imagePath, (error) => {
             if (error) {
               console.error('Error deleting original image:', error);
@@ -187,11 +188,12 @@ function uploadImage(req, res, next) {
           res.status(500).json({ error: 'Image conversion failed' });
         });
     } else {
-      // No image uploaded, proceed to next middleware
+      // Si aucune image n'est téléchargée, vous pouvez simplement passer au middleware suivant sans supprimer l'image existante
       next();
     }
   });
 }
+
 
 
 
