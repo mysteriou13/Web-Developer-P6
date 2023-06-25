@@ -31,25 +31,24 @@ router.put('/api/sauces/:id', middelware.verifyToken, middelware.uploadImage, fu
           console.error(err);
         }
       });
- 
+
+      console.log("req file "+req.file);
+
       const sauceObjet = req.file
-      ? {
-          ...JSON.parse(req.body.sauce),
-          imageUrl: `${req.protocol}://${req.get("host")}/images/${
-            req.file.filename
-          }`,
-        }
-      : { ...req.body };
-    //method updateOne() 1er argument = object  modify/verifSiId=idOk
-    sauce.updateOne({ _id: req.params.id }, { ...sauceObjet, _id: req.params.id })
-      .then(() => res.status(200).json({ message: "Modified sauce !" }))
-      .catch((error) => res.status(400).json({ error }));
-
-
-
+        ? {
+            ...JSON.parse(req.body.sauce),
+            imageUrl: `${req.protocol}://${req.get("host")}/images/${
+              req.file.filename
+            }`,
+          }
+        : { ...req.body };
+        
+      // Method updateOne() 1er argument = objet de modification / vérification de l'id=idOk
+      sauce.updateOne({ _id: req.params.id }, { ...sauceObjet, _id: req.params.id })
+        .then(() => res.status(200).json({ message: "Modified sauce!" }))
+        .catch((error) => res.status(400).json({ error }));
     })
-   
-    
+    .catch((error) => res.status(500).json({ error }));
 });
 
 module.exports = router;
