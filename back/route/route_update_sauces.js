@@ -26,11 +26,13 @@ router.put('/api/sauces/:id', middelware.verifyToken, middelware.uploadImage, fu
 
       var img_dir = img_url[0]+"/image";
 
+      if(req.file){
       fs.unlink(dir_image, err => {
         if (err) {
           console.error(err);
         }
       });
+    }
 
       console.log("req file "+req.file);
 
